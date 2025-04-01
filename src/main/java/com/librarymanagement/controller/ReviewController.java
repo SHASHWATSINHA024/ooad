@@ -14,10 +14,15 @@ public class ReviewController {
 
     @PostMapping("/add")
     public String addReview(@RequestBody ReviewDTO reviewDTO) {
+        // Debugging: Print received data
+        System.out.println("Book ID: " + reviewDTO.getBookId());
+        System.out.println("User ID: " + reviewDTO.getUserId());
+        System.out.println("Review: " + reviewDTO.getReviewText());
+
         return reviewService.addReview(
-            reviewDTO.getBookId(),  // ✅ Extracting Long bookId
-            reviewDTO.getUserId(),  // ✅ Extracting Long userId
-            reviewDTO.getReviewText() // ✅ Extracting review text
+            reviewDTO.getBookId(),
+            reviewDTO.getUserId(),
+            reviewDTO.getReviewText()
         );
     }
 }
