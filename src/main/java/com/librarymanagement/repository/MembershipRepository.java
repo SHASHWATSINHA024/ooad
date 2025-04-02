@@ -1,6 +1,11 @@
 package com.librarymanagement.repository;
+import java.util.List;
 
-import com.librarymanagement.entity.Membership;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MembershipRepository extends JpaRepository<Membership, Long> {}
+import com.librarymanagement.entity.Membership;
+
+public interface MembershipRepository extends JpaRepository<Membership, Long> {
+    List<Membership> findByIsActiveTrue();
+    List<Membership> findByIsActiveFalse();
+}

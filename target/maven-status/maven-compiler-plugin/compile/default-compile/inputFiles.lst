@@ -2,7 +2,6 @@ C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\s
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\controller\DeliveryController.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\TransactionDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\exception\ResourceNotFoundException.java
-C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\DeliveryRepository.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\service\MembershipService.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\controller\ReviewController.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\MembershipDTO.java
@@ -30,6 +29,7 @@ C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\e
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\service\TransactionService.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\controller\BookController.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\entity\Book.java
+C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\BookDeliveryRepository.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\BookRepository.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\entity\Membership.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\ReviewRepository.java

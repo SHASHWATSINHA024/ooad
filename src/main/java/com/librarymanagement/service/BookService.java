@@ -1,12 +1,13 @@
 package com.librarymanagement.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.librarymanagement.dto.BookDTO;
 import com.librarymanagement.entity.Book;
 import com.librarymanagement.repository.BookRepository;
-
 @Service
 public class BookService {
 
@@ -22,6 +23,9 @@ public class BookService {
 
         bookRepository.save(book);
         return "Book added successfully!";
+    }
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
 
     public BookDTO getBook(Long id) {

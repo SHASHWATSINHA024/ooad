@@ -1,10 +1,11 @@
 package com.librarymanagement.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.librarymanagement.dto.UserDTO;
 import com.librarymanagement.entity.User;
 import com.librarymanagement.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -12,21 +13,21 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User registerUser(UserDTO userDTO) {
+    // Register user with plain text password (not encoded)
+    public void registerUser(UserDTO userDTO) {
         User user = new User();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
+        user.setName(userDTO.getName());  // ✅ Set name
+        user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
-        return userRepository.save(user);
+        user.setEmail(userDTO.getEmail());
+        user.setRole("USER"); // Default role if needed
+        userRepository.save(user);
     }
+    
 
-    public String loginUser(UserDTO userDTO) {
-        User user = userRepository.findByEmail(userDTO.getEmail());
-
-        if (user != null && user.getPassword().equals(userDTO.getPassword())) {
-            return "Login successful!";
-        } else {
-            return "Invalid credentials!";
-        }
+    // Login user (password check with plain text password)
+    public boolean loginUser(String username, String password) {
+        User user = userRepository.findByUsername(username);
+        return user != null && user.getPassword().equals(password); // Compare plain text password
     }
 }

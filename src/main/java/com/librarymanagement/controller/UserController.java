@@ -19,6 +19,14 @@ public class UserController {
     @PostMapping("/register")
     public String registerUser(@RequestBody UserDTO userDTO) {
         userService.registerUser(userDTO);
-        return "User registered successfully!";  // ✅ Now returns a String message
+        return "User registered successfully!";
     }
+
+    // Login endpoint
+    @PostMapping("/login")
+    public String loginUser(@RequestBody UserDTO userDTO) {
+        boolean isAuthenticated = userService.loginUser(userDTO.getUsername(), userDTO.getPassword());
+        return isAuthenticated ? "Login successful!" : "Invalid credentials!";
+    }
+    
 }

@@ -1,10 +1,11 @@
 package com.librarymanagement.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.librarymanagement.entity.User;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    // Add the method to find a user by their email
-    User findByEmail(String email);
+    User findByUsername(String username);
 }

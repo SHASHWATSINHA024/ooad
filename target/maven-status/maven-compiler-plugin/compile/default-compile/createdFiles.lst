@@ -17,11 +17,11 @@ com\librarymanagement\repository\UserRepository.class
 com\librarymanagement\controller\ReviewController.class
 com\librarymanagement\repository\ReviewRepository.class
 com\librarymanagement\entity\BookDelivery.class
-com\librarymanagement\repository\DeliveryRepository.class
 com\librarymanagement\dto\BookDTO.class
 com\librarymanagement\entity\Membership.class
 com\librarymanagement\LibraryManagementApplication.class
 com\librarymanagement\service\MembershipService.class
+com\librarymanagement\repository\BookDeliveryRepository.class
 com\librarymanagement\service\TransactionService.class
 com\librarymanagement\dto\DeliveryDTO.class
 com\librarymanagement\service\UserService.class

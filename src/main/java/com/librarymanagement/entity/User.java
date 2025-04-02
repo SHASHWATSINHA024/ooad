@@ -4,19 +4,35 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "users")  // Ensure this maps correctly
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String name;      // Field for name
-    private String email;     // Field for email
-    private String password;  // Field for password
+    private Long id;  
 
-    // Getter and Setter for 'name'
+    private String name;  // ✅ Add this field
+
+    private String username;
+    private String password;
+    private String email;
+    private String role; // Optional, since your table has "role"
+
+    // Default constructor
+    public User() {}
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -25,16 +41,14 @@ public class User {
         this.name = name;
     }
 
-    // Getter and Setter for 'email'
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    // Getter and Setter for 'password'
     public String getPassword() {
         return password;
     }
@@ -43,12 +57,19 @@ public class User {
         this.password = password;
     }
 
-    // Getter and Setter for 'id' (primary key)
-    public Long getId() {
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
