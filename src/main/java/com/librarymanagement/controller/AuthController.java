@@ -1,5 +1,10 @@
 package com.librarymanagement.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +18,6 @@ import com.librarymanagement.dto.LoginDTO;
 import com.librarymanagement.dto.UserDTO;
 import com.librarymanagement.service.LibrarianService;
 import com.librarymanagement.service.UserService;
-
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
