@@ -3,31 +3,40 @@ package com.librarymanagement.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class SecurityConfig {
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()  // Disable CSRF for testing
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
             .authorizeRequests()
-            .antMatchers("/**").authenticated()  // Require authentication for all endpoints
+                // Permit all for development
+                .antMatchers("/**").permitAll()
+                // The lines below are commented out for development 
+                // but should be enabled for production
+                /*
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/users/register").permitAll()
+                .antMatchers("/api/librarians/login").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/api/librarians/**").hasRole("LIBRARIAN")
+                .anyRequest().authenticated()
+                */
             .and()
-            .httpBasic();
-        return http.build();
+            .httpBasic()
+            .and()
+            .headers().frameOptions().disable(); // For H2 console
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("admin")
-                .password("{noop}rock123")  // No password encoding
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

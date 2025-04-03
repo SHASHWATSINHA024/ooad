@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.librarymanagement.dto.BookDTO;
-import com.librarymanagement.entity.Book;
 import com.librarymanagement.service.BookService;
 
 @RestController
@@ -25,10 +24,12 @@ public class BookController {
     public String addBook(@RequestBody BookDTO bookDTO) {
         return bookService.addBook(bookDTO);
     }
+    
     @GetMapping
-    public List<Book> getAllBooks() {
+    public List<BookDTO> getAllBooks() {
         return bookService.getAllBooks();
     }
+    
     @GetMapping("/{id}")
     public BookDTO getBook(@PathVariable Long id) {
         return bookService.getBook(id);

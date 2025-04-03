@@ -1,0 +1,112 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------< com.librarymanagement:library-management >--------------
+[INFO] Building library-management 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:2.7.10:run (default-cli) > test-compile @ library-management >>>
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ library-management ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] Copying 0 resource
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ library-management ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ library-management ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory /Users/sharodhrao/Project/ooad/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ library-management ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:2.7.10:run (default-cli) < test-compile @ library-management <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:2.7.10:run (default-cli) @ library-management ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+[32m :: Spring Boot :: [39m             [2m (v2.7.10)[0;39m
+
+[2m2025-04-03 00:01:29.235[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.l.LibraryManagementApplication        [0;39m [2m:[0;39m Starting LibraryManagementApplication using Java 23.0.2 on Sharodhs-MacBook-Air.local with PID 49680 (/Users/sharodhrao/Project/ooad/target/classes started by sharodhrao in /Users/sharodhrao/Project/ooad)
+[2m2025-04-03 00:01:29.236[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.l.LibraryManagementApplication        [0;39m [2m:[0;39m No active profile set, falling back to 1 default profile: "default"
+[2m2025-04-03 00:01:29.518[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+[2m2025-04-03 00:01:29.557[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 35 ms. Found 13 JPA repository interfaces.
+[2m2025-04-03 00:01:29.817[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port(s): 8080 (http)
+[2m2025-04-03 00:01:29.822[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
+[2m2025-04-03 00:01:29.822[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.apache.catalina.core.StandardEngine [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/9.0.73]
+[2m2025-04-03 00:01:29.862[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
+[2m2025-04-03 00:01:29.862[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 601 ms
+[2m2025-04-03 00:01:29.936[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.hibernate.jpa.internal.util.LogHelper [0;39m [2m:[0;39m HHH000204: Processing PersistenceUnitInfo [name: default]
+[2m2025-04-03 00:01:29.960[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.hibernate.Version                   [0;39m [2m:[0;39m HHH000412: Hibernate ORM core version 5.6.15.Final
+[2m2025-04-03 00:01:30.033[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.hibernate.annotations.common.Version  [0;39m [2m:[0;39m HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+[2m2025-04-03 00:01:30.074[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Starting...
+[2m2025-04-03 00:01:30.278[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Start completed.
+[2m2025-04-03 00:01:30.288[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.hibernate.dialect.Dialect           [0;39m [2m:[0;39m HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+[2m2025-04-03 00:01:30.726[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.h.e.t.j.p.i.JtaPlatformInitiator      [0;39m [2m:[0;39m HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+[2m2025-04-03 00:01:30.731[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mj.LocalContainerEntityManagerFactoryBean[0;39m [2m:[0;39m Initialized JPA EntityManagerFactory for persistence unit 'default'
+[2m2025-04-03 00:01:30.917[0;39m [33m WARN[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mJpaBaseConfiguration$JpaWebConfiguration[0;39m [2m:[0;39m spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+[2m2025-04-03 00:01:31.180[0;39m [33m WARN[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.s.UserDetailsServiceAutoConfiguration[0;39m [2m:[0;39m 
+
+Using generated security password: 7a9ee693-8819-413c-ba38-553b8ea4c549
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+[2m2025-04-03 00:01:31.221[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.s.web.DefaultSecurityFilterChain    [0;39m [2m:[0;39m Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5bc1903, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3cc5408c, org.springframework.security.web.context.SecurityContextPersistenceFilter@5a941fb4, org.springframework.security.web.header.HeaderWriterFilter@481c1e92, org.springframework.security.web.authentication.logout.LogoutFilter@34cb1310, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@761f1a28, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@22561412, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4b37d1a4, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1ecd09d5, org.springframework.security.web.session.SessionManagementFilter@54fd5759, org.springframework.security.web.access.ExceptionTranslationFilter@5d782a4a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@148f94dc]
+[2m2025-04-03 00:01:31.362[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8080 (http) with context path ''
+[2m2025-04-03 00:01:31.367[0;39m [32m INFO[0;39m [35m49680[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.l.LibraryManagementApplication        [0;39m [2m:[0;39m Started LibraryManagementApplication in 2.282 seconds (JVM running for 2.463)
+Hibernate: 
+    select
+        user0_.id as col_0_0_ 
+    from
+        users user0_ 
+    where
+        user0_.username=? limit ?
+Hibernate: 
+    insert 
+    into
+        users
+        (address, coins, email, full_name, membership_end_date, membership_start_date, membership_type, password, phone_number, status, username) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Admin user created with username: admin and password: admin123
+Hibernate: 
+    select
+        librarian0_.id as col_0_0_ 
+    from
+        librarians librarian0_ 
+    where
+        librarian0_.username=? limit ?
+Hibernate: 
+    insert 
+    into
+        librarians
+        (email, employee_id, full_name, is_admin, password, role, username) 
+    values
+        (?, ?, ?, ?, ?, ?, ?)
+Librarian created with username: librarian and password: librarian123
+Hibernate: 
+    select
+        user0_.id as col_0_0_ 
+    from
+        users user0_ 
+    where
+        user0_.username=? limit ?
+Hibernate: 
+    insert 
+    into
+        users
+        (address, coins, email, full_name, membership_end_date, membership_start_date, membership_type, password, phone_number, status, username) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Test user created with username: user and password: user123

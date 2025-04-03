@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+        }
+        .endpoint {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .endpoint h3 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Library Management System</h1>
+        <p>Welcome to the Library Management System API</p>
+        
+        <h2>API Endpoints</h2>
+        
+        <div class="endpoint">
+            <h3>Authentication</h3>
+            <p><code>POST /api/auth/users/login</code> - User login</p>
+            <p><code>POST /api/auth/users/register</code> - User registration</p>
+            <p><code>POST /api/auth/librarians/login</code> - Librarian login</p>
+        </div>
+        
+        <div class="endpoint">
+            <h3>Users</h3>
+            <p><code>GET /api/users/{id}</code> - Get user details</p>
+            <p><code>PUT /api/users/{id}</code> - Update user details</p>
+            <p><code>GET /api/users/{id}/books</code> - Get user's borrowed books</p>
+        </div>
+        
+        <div class="endpoint">
+            <h3>Books</h3>
+            <p><code>GET /books</code> - Get all books</p>
+            <p><code>GET /books/{id}</code> - Get book details</p>
+            <p><code>POST /books/add</code> - Add a new book</p>
+        </div>
+        
+        <div class="endpoint">
+            <h3>Librarians</h3>
+            <p><code>GET /api/librarians/{id}</code> - Get librarian details</p>
+            <p><code>GET /api/librarians/{id}/home</code> - Get librarian dashboard</p>
+        </div>
+        
+        <p>For full API documentation, please refer to the API documentation.</p>
+    </div>
+</body>
+</html> 
