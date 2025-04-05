@@ -14,7 +14,7 @@ import com.librarymanagement.dto.BookDTO;
 import com.librarymanagement.service.BookService;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")  // Changed from "/books" to "/api/books"
 public class BookController {
 
     @Autowired

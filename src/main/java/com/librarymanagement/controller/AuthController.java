@@ -1,96 +1,66 @@
 package com.librarymanagement.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.librarymanagement.dto.LibrarianDTO;
-import com.librarymanagement.dto.LoginDTO;
-import com.librarymanagement.dto.UserDTO;
-import com.librarymanagement.service.LibrarianService;
+import com.librarymanagement.entity.User;
 import com.librarymanagement.service.UserService;
-@RestController
-@RequestMapping("/api/auth")
+
+@Controller
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
     private UserService userService;
     
-    @Autowired
-    private LibrarianService librarianService;
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "auth/login";
+    }
     
-    @PostMapping("/users/login")
-    public ResponseEntity<?> userLogin(@Valid @RequestBody LoginDTO loginDTO) {
-        UserDTO user = userService.authenticateUser(loginDTO);
+    @PostMapping("/login")
+    public String processLogin(
+            @RequestParam String username, 
+            @RequestParam String password,
+            RedirectAttributes redirectAttributes) {
         
-        if (user != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("user", user);
-            return ResponseEntity.ok(response);
+        // For development: using users from DataInitializer
+        if (username.equals("admin") && password.equals("admin123")) {
+            return "redirect:/admin/dashboard";
+        } else if (username.equals("librarian") && password.equals("librarian123")) {
+            return "redirect:/librarian/dashboard";
+        } else if (username.equals("user") && password.equals("user123")) {
+            return "redirect:/users/dashboard";
         } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Invalid username or password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            redirectAttributes.addFlashAttribute("error", "Invalid username or password");
+            return "redirect:/auth/login";
         }
     }
     
-    @PostMapping("/librarians/login")
-    public ResponseEntity<?> librarianLogin(@Valid @RequestBody LoginDTO loginDTO) {
-        LibrarianDTO librarian = librarianService.authenticateLibrarian(loginDTO);
+    @GetMapping("/register")
+    public String showRegistrationForm() {
+        return "auth/register";
+    }
+    
+    @PostMapping("/register")
+    public String processRegistration(
+            /* Add form parameters here */
+            RedirectAttributes redirectAttributes) {
         
-        if (librarian != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("librarian", librarian);
-            return ResponseEntity.ok(response);
-        } else {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Invalid username or password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
+        // Registration logic
+        redirectAttributes.addFlashAttribute("success", "Registration successful! Please log in.");
+        return "redirect:/auth/login";
     }
     
-    @PostMapping("/users/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
-        try {
-            UserDTO registeredUser = userService.registerUser(userDTO);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Registration successful. Your membership request is pending approval.");
-            response.put("user", registeredUser);
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
+    @PostMapping("/logout")
+    public String logout() {
+        // Simple logout - in a real app, this would use Spring Security
+        return "redirect:/";
     }
-    
-    @PostMapping("/librarians/register")
-    public ResponseEntity<?> registerLibrarian(@Valid @RequestBody LibrarianDTO librarianDTO) {
-        try {
-            LibrarianDTO registeredLibrarian = librarianService.registerLibrarian(librarianDTO);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Librarian registration successful");
-            response.put("librarian", registeredLibrarian);
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-} 
+}

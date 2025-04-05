@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Home')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">Welcome to the Library Management System</h1>
+            <p class="lead">Find books, manage your loans, and explore our collection.</p>
+            <hr class="my-4">
+            <p>Browse our extensive collection of books or log in to check your account.</p>
+            <a class="btn btn-primary btn-lg" th:href="@{/books}" role="button">Browse Books</a>
+            <a class="btn btn-secondary btn-lg" th:href="@{/admin/dashboard}" role="button">Admin Dashboard</a>
+        </div>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Browse Books</h5>
+                        <p class="card-text">Explore our extensive collection of books from various genres.</p>
+                        <a th:href="@{/books}" class="btn btn-outline-primary">View Catalog</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Membership</h5>
+                        <p class="card-text">Join our library to borrow books and access exclusive services.</p>
+                        <a th:href="@{/membership}" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Events</h5>
+                        <p class="card-text">Check out upcoming events and book club meetings.</p>
+                        <a th:href="@{/events}" class="btn btn-outline-primary">View Events</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

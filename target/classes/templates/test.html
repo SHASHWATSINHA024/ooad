@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thymeleaf Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .info-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .test-items {
+            margin: 20px 0;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thymeleaf Test Page</h1>
+        
+        <div class="info-box">
+            <p>This is a test page to verify that Thymeleaf is working correctly in your Spring Boot application.</p>
+            <p th:text="'Server time: ' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm:ss')}">Server time: 01 Jan 2024 12:00:00</p>
+        </div>
+        
+        <div class="test-items">
+            <h2>Thymeleaf Basic Tests:</h2>
+            
+            <div class="test-item">
+                <p>1. Basic Variable Test:</p>
+                <p>Message from controller: <span th:text="${message ?: 'No message provided'}">Default message</span></p>
+            </div>
+            
+            <div class="test-item">
+                <p>2. Static Resources Test:</p>
+                <p>The CSS styling on this page comes from an inline style. If you see formatting, basic HTML/CSS is working.</p>
+            </div>
+            
+            <div class="test-item">
+                <p>3. Conditional Test:</p>
+                <p th:if="${message != null}">Message exists!</p>
+                <p th:unless="${message != null}">No message was provided.</p>
+            </div>
+            
+            <div class="test-item">
+                <p>4. URL Building Test:</p>
+                <p>Link to home: <a th:href="@{/}">Home</a></p>
+                <p>Link back to this page: <a th:href="@{/test}">Refresh</a></p>
+            </div>
+        </div>
+        
+        <p class="success">If you can see this page with proper formatting and all tests working, Thymeleaf is configured correctly!</p>
+        
+        <div class="info-box">
+            <p>Next steps:</p>
+            <ul>
+                <li>Check that your controllers are returning the correct view names</li>
+                <li>Verify that your template files are in the correct location</li>
+                <li>Ensure your application.properties has the correct Thymeleaf settings</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

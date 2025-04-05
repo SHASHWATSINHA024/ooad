@@ -1,4 +1,5 @@
 com\librarymanagement\config\DataInitializer.class
+com\librarymanagement\controller\AdminController.class
 com\librarymanagement\service\DeliveryService.class
 com\librarymanagement\dto\MembershipRequestDTO.class
 com\librarymanagement\dto\MembershipDTO.class
@@ -35,7 +36,6 @@ com\librarymanagement\dto\BookReviewDTO.class
 com\librarymanagement\controller\TransactionController.class
 com\librarymanagement\repository\BookSellRequestRepository.class
 com\librarymanagement\repository\BookTransactionRepository.class
-com\librarymanagement\controller\BookController.class
 com\librarymanagement\dto\BookOrderDTO.class
 com\librarymanagement\service\BookOrderService.class
 com\librarymanagement\exception\InvalidOperationException.class
