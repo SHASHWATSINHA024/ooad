@@ -41,6 +41,7 @@ public class UserService {
         user.setFullName(userDTO.getFullName());
         user.setCoins(0);
         user.setStatus(UserStatus.PENDING);
+        user.setRole(userDTO.getRole() != null ? userDTO.getRole() : "USER");
         
         User savedUser = userRepository.save(user);
         
@@ -52,6 +53,7 @@ public class UserService {
         savedUserDTO.setFullName(savedUser.getFullName());
         savedUserDTO.setCoins(savedUser.getCoins());
         savedUserDTO.setStatus(savedUser.getStatus().toString());
+        savedUserDTO.setRole(savedUser.getRole());
         
         return savedUserDTO;
     }
@@ -63,6 +65,7 @@ public class UserService {
             User user = userOpt.get();
             
             if (passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+                System.out.println("Password matches");
                 // Password matches, return user data
                 UserDTO userDTO = new UserDTO();
                 userDTO.setId(user.getId());
@@ -71,6 +74,7 @@ public class UserService {
                 userDTO.setFullName(user.getFullName());
                 userDTO.setCoins(user.getCoins());
                 userDTO.setStatus(user.getStatus().toString());
+                userDTO.setRole(user.getRole());
                 
                 return userDTO;
             }
@@ -93,6 +97,7 @@ public class UserService {
             userDTO.setFullName(user.getFullName());
             userDTO.setCoins(user.getCoins());
             userDTO.setStatus(user.getStatus().toString());
+            userDTO.setRole(user.getRole());
             
             return userDTO;
         }
@@ -113,6 +118,7 @@ public class UserService {
             userDTO.setFullName(user.getFullName());
             userDTO.setCoins(user.getCoins());
             userDTO.setStatus(user.getStatus().toString());
+            userDTO.setRole(user.getRole());
             
             return userDTO;
         }
@@ -152,6 +158,10 @@ public class UserService {
                 }
             }
             
+            if (userDTO.getRole() != null) {
+                user.setRole(userDTO.getRole());
+            }
+            
             User updatedUser = userRepository.save(user);
             
             // Convert to DTO and return
@@ -162,6 +172,7 @@ public class UserService {
             updatedUserDTO.setFullName(updatedUser.getFullName());
             updatedUserDTO.setCoins(updatedUser.getCoins());
             updatedUserDTO.setStatus(updatedUser.getStatus().toString());
+            updatedUserDTO.setRole(updatedUser.getRole());
             
             return updatedUserDTO;
         }
@@ -233,6 +244,7 @@ public class UserService {
                 dto.setFullName(user.getFullName());
                 dto.setCoins(user.getCoins());
                 dto.setStatus(user.getStatus().toString());
+                dto.setRole(user.getRole());
                 userDTOs.add(dto);
             }
         }

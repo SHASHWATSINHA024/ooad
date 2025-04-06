@@ -51,6 +51,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.PENDING;
     
+    @Column(columnDefinition = "varchar(50) default 'USER'")
+    private String role = "USER";
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<BookTransaction> transactions = new ArrayList<>();
     
@@ -168,6 +171,14 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+    
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public List<BookTransaction> getTransactions() {

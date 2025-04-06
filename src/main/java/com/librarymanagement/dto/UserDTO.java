@@ -25,11 +25,13 @@ public class UserDTO {
     
     private String status;
     
+    private String role = "USER";
+    
     // Default constructor
     public UserDTO() {}
     
     // Constructor with all fields
-    public UserDTO(Long id, String username, String password, String email, String fullName, int coins, String status) {
+    public UserDTO(Long id, String username, String password, String email, String fullName, int coins, String status, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -37,6 +39,7 @@ public class UserDTO {
         this.fullName = fullName;
         this.coins = coins;
         this.status = status;
+        this.role = role;
     }
     
     // Getters and Setters
@@ -94,5 +97,13 @@ public class UserDTO {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getRole() {
+        return role;
+    }
+    
+    public void setRole(String role) {
+        this.role = role;
     }
 }

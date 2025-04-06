@@ -1,1 +1,36 @@
- 
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Book Catalog')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <h1>Book Catalog</h1>
+        
+        <!-- Simple List -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4" th:each="book : ${books}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="${book.author}">Author</h6>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/books/view/{id}(id=${book.id})}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12" th:if="${books.isEmpty()}">
+                <div class="alert alert-info">
+                    No books found in the catalog.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>
