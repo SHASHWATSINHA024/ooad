@@ -3,6 +3,7 @@ package com.librarymanagement.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,7 @@ import com.librarymanagement.dto.BookDTO;
 import com.librarymanagement.service.BookService;
 
 @RestController
-@RequestMapping("/api/books")  // Changed from "/books" to "/api/books"
+@RequestMapping("/api/books")
 public class BookController {
 
     @Autowired
@@ -33,5 +34,11 @@ public class BookController {
     @GetMapping("/{id}")
     public BookDTO getBook(@PathVariable Long id) {
         return bookService.getBook(id);
+    }
+
+    @GetMapping("/view")
+    public ResponseEntity<?> viewBooks() {
+        List<BookDTO> books = bookService.getAllBooks();
+        return ResponseEntity.ok(books);
     }
 }

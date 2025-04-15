@@ -51,8 +51,8 @@ public class BookOrder {
     private LocalDateTime deliveryDate;
     
     @ManyToOne
-    @JoinColumn(name = "librarian_id", nullable = false)
-    private Librarian orderedBy;
+    @JoinColumn(name = "ordered_by_user_id", nullable = false)
+    private User orderedBy;
     
     @Column(name = "supplier_name")
     private String supplierName;
@@ -132,11 +132,11 @@ public class BookOrder {
         this.deliveryDate = deliveryDate;
     }
 
-    public Librarian getOrderedBy() {
+    public User getOrderedBy() {
         return orderedBy;
     }
 
-    public void setOrderedBy(Librarian orderedBy) {
+    public void setOrderedBy(User orderedBy) {
         this.orderedBy = orderedBy;
     }
 

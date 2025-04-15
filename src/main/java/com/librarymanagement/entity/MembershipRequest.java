@@ -26,7 +26,7 @@ public class MembershipRequest {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "submitted_by_user_id", nullable = false)
     private User user;
 
     @Column(name = "request_date", nullable = false)
@@ -46,8 +46,8 @@ public class MembershipRequest {
     private LocalDateTime processedDate;
 
     @ManyToOne
-    @JoinColumn(name = "processed_by_id")
-    private Librarian processedBy;
+    @JoinColumn(name = "processed_by_user_id")
+    private User processedBy;
 
     @Column(name = "admin_notes")
     private String adminNotes;
@@ -109,11 +109,11 @@ public class MembershipRequest {
         this.processedDate = processedDate;
     }
 
-    public Librarian getProcessedBy() {
+    public User getProcessedBy() {
         return processedBy;
     }
 
-    public void setProcessedBy(Librarian processedBy) {
+    public void setProcessedBy(User processedBy) {
         this.processedBy = processedBy;
     }
 

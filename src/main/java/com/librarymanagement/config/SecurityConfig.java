@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-// Remove this import: import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -18,17 +15,11 @@ public class SecurityConfig {
         http
             .authorizeRequests(authorizeRequests ->
                 authorizeRequests
-                    .antMatchers("/**").permitAll() // Allow all requests during development
+                    // Allow all requests
+                    .anyRequest().permitAll()
             )
-            .csrf().disable();
+            .csrf().disable(); // Disable CSRF for development
         
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // Use NoOpPasswordEncoder which doesn't encrypt passwords
-        // WARNING: Not secure for production
-        return NoOpPasswordEncoder.getInstance();
     }
 }

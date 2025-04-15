@@ -9,13 +9,48 @@
         
         <h1>Book Catalog</h1>
         
-        <!-- Simple List -->
-        <div class="row mt-4">
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form action="/books/search" method="get" class="d-flex mb-4">
+                    <input type="text" name="keyword" class="form-control me-2" placeholder="Search books..." required>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.title}"></td>
+                    <td th:text="${book.author}"></td>
+                    <td th:text="${book.category}"></td>
+                    <td th:text="${book.price}"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Book Grid -->
+        <div class="row">
             <div class="col-md-4 mb-4" th:each="book : ${books}">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${book.title}">Book Title</h5>
                         <h6 class="card-subtitle mb-2 text-muted" th:text="${book.author}">Author</h6>
+                        <p class="card-text">
+                            <small class="text-muted">ISBN: <span th:text="${book.isbn}">ISBN</span></small><br>
+                            <small class="text-muted">Available: <span th:text="${book.availableCopies}">0</span></small>
+                        </p>
                     </div>
                     <div class="card-footer">
                         <a th:href="@{/books/view/{id}(id=${book.id})}" class="btn btn-primary">View Details</a>

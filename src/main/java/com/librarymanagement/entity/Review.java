@@ -10,11 +10,12 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;  // Primary key of the review
 
-    private Long userId;
-    private Long bookId;
-    private String reviewText;
+    private Long userId;  // The user who wrote the review
+    private Long bookId;  // The book being reviewed
+    private String reviewText;  // The content of the review
+    private int rating;  // Rating given to the book (e.g., 1-5)
 
     // Getters and Setters
     public Long getId() {
@@ -47,5 +48,13 @@ public class Review {
 
     public void setReviewText(String reviewText) {
         this.reviewText = reviewText;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

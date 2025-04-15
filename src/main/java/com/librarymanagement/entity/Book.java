@@ -1,55 +1,36 @@
 package com.librarymanagement.entity;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(name = "books")  // Use the "books" table in the database
+@Table(name = "books")  // Explicitly specify the table name as "books"
 public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(nullable = false)
+
     private String title;
-    
-    @Column(nullable = false)
     private String author;
-    
     private String isbn;
-    
-    @Column(length = 1000)
     private String description;
-    
-    private String category;  // ✅ Add missing category field
-    
+    private String category;
     private BigDecimal price;
-    
-    private int stock = 0;
-    
-    private int coinPrice = 0;
-    
-    private int borrowCount = 0;
-    
+    private int stock;
+    private int coinPrice;
+    private int borrowCount;
     private LocalDateTime publishDate;
     
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private Set<BookReview> reviews = new HashSet<>();
-    
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private Set<BookTransaction> transactions = new HashSet<>();
-    
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private Set<WishlistItem> wishlistItems = new HashSet<>();
-    
-    // Constructors
-    public Book() {}
-    
-    // Getters and setters
+    private int availableCopies; // Reintroduced availableCopies
+    private int totalCopies;     // Reintroduced totalCopies
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -90,11 +71,11 @@ public class Book {
         this.description = description;
     }
 
-    public String getCategory() {  // ✅ Correct getter for category
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {  // ✅ Correct setter for category
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -138,27 +119,19 @@ public class Book {
         this.publishDate = publishDate;
     }
 
-    public Set<BookReview> getReviews() {
-        return reviews;
+    public int getAvailableCopies() {
+        return availableCopies;
     }
 
-    public void setReviews(Set<BookReview> reviews) {
-        this.reviews = reviews;
+    public void setAvailableCopies(int availableCopies) {
+        this.availableCopies = availableCopies;
     }
 
-    public Set<BookTransaction> getTransactions() {
-        return transactions;
+    public int getTotalCopies() {
+        return totalCopies;
     }
 
-    public void setTransactions(Set<BookTransaction> transactions) {
-        this.transactions = transactions;
-    }
-
-    public Set<WishlistItem> getWishlistItems() {
-        return wishlistItems;
-    }
-
-    public void setWishlistItems(Set<WishlistItem> wishlistItems) {
-        this.wishlistItems = wishlistItems;
+    public void setTotalCopies(int totalCopies) {
+        this.totalCopies = totalCopies;
     }
 }

@@ -30,17 +30,6 @@ public class WishlistItem {
     @Column(name = "added_at", nullable = false)
     private LocalDateTime addedAt;
     
-    // Default constructor
-    public WishlistItem() {
-    }
-    
-    // Constructor with fields
-    public WishlistItem(User user, Book book, LocalDateTime addedAt) {
-        this.user = user;
-        this.book = book;
-        this.addedAt = addedAt;
-    }
-    
     // Getters and Setters
     public Long getId() {
         return id;

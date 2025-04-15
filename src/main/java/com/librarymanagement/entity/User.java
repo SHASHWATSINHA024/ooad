@@ -51,8 +51,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.PENDING;
     
-    @Column(columnDefinition = "varchar(50) default 'USER'")
-    private String role = "USER";
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.USER;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<BookTransaction> transactions = new ArrayList<>();
@@ -66,6 +67,11 @@ public class User {
     // Enum for user status
     public enum UserStatus {
         PENDING, ACTIVE, SUSPENDED
+    }
+
+    // Enum for user roles
+    public enum UserRole {
+        USER, ADMIN
     }
 
     // Getters and Setters
@@ -173,11 +179,11 @@ public class User {
         this.status = status;
     }
     
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 

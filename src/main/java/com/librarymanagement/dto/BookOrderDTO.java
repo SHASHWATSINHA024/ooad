@@ -33,7 +33,7 @@ public class BookOrderDTO {
     
     private LocalDateTime deliveryDate;
     
-    @NotNull(message = "Librarian ID is required")
+    @NotNull(message = "User ID is required")
     private Long orderedById;
     
     private String orderedByName;

@@ -8,104 +8,94 @@
         <div th:replace="fragments/layout :: alert"></div>
         
         <div class="row">
-            <div class="col-md-4">
-                <!-- Simple image placeholder -->
-                <img src="/images/no-cover.jpg" class="img-fluid rounded" alt="Book Cover">
-                
-                <div class="mt-3">
-                    <!-- Borrow and Wishlist buttons -->
-                    <div class="d-grid gap-2">
-                        <form th:if="${book.stock > 0}" th:action="@{/books/borrow}" method="post">
-                            <input type="hidden" name="bookId" th:value="${book.id}">
-                            <button type="submit" class="btn btn-success d-block w-100">Borrow</button>
-                        </form>
-                        <button th:unless="${book.stock > 0}" class="btn btn-secondary d-block w-100" disabled>
-                            Currently Unavailable
-                        </button>
+            <!-- Book Details -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title" th:text="${book.title}">Book Title</h1>
+                        <h4 class="card-subtitle mb-3 text-muted" th:text="${book.author}">Author</h4>
                         
-                        <form th:action="@{/books/view/addToWishlist}" method="post" class="mt-2">
-                            <input type="hidden" name="bookId" th:value="${book.id}">
-                            <button type="submit" class="btn btn-outline-primary d-block w-100">Add to Wishlist</button>
-                        </form>
-                    </div>
-                    
-                    <div class="mt-3">
-                        <h5>Book Details</h5>
-                        <ul class="list-group">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                ISBN
-                                <span th:text="${book.isbn != null ? book.isbn : 'N/A'}">ISBN</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Category
-                                <span class="badge bg-secondary" th:text="${book.category != null ? book.category : 'Uncategorized'}">Category</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Available Copies
-                                <span th:text="${book.stock > 0 ? book.stock : 'Out of stock'}">Stock</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Price
-                                <span th:text="${book.price != null ? '$' + book.price : 'N/A'}">Price</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Coin Price
-                                <span th:text="${book.coinPrice > 0 ? book.coinPrice + ' coins' : 'N/A'}">Coin Price</span>
-                            </li>
-                        </ul>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p><strong>ISBN:</strong> <span th:text="${book.isbn}">ISBN</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Stock:</strong> <span th:text="${book.stock}">0</span></p>
+                                <p><strong>Category:</strong> <span th:text="${book.category}">Category</span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5>Description</h5>
+                            <p th:text="${book.description}">Book description goes here.</p>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-8">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
-                        <li class="breadcrumb-item"><a th:href="@{/books/view}">Books</a></li>
-                        <li class="breadcrumb-item active" aria-current="page" th:text="${book.title}">Book Title</li>
-                    </ol>
-                </nav>
-                
-                <h1 th:text="${book.title}">Book Title</h1>
-                <h4 class="text-muted" th:text="'by ' + ${book.author}">by Author</h4>
-                
-                <div class="mt-4">
-                    <h3>Description</h3>
-                    <p th:text="${book.description != null ? book.description : 'No description available.'}">Book description goes here...</p>
-                </div>
-                
-                <!-- Simplified review section -->
-                <div class="mt-4">
-                    <h3>Reviews</h3>
-                    <div class="alert alert-light">
-                        No reviews yet. Be the first to review this book!
+            <!-- Actions -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Actions</h5>
+
+                        <!-- Buy Book Button -->
+                        <form th:action="@{/books/buy}" method="post" class="mb-3">
+                            <input type="hidden" name="bookId" th:value="${book.id}">
+                            <button type="submit" class="btn btn-success w-100" th:disabled="${book.stock <= 0}">
+                                <i class="fas fa-shopping-cart"></i> Buy Book
+                            </button>
+                        </form>
+
+                        <!-- Add to Wishlist Button -->
+                        <button id="addToWishlistBtn" class="btn btn-primary w-100 mb-3" 
+                                th:attr="data-book-id=${book.id}" onclick="addToWishlist()">
+                            <i class="fas fa-heart"></i> Add to Wishlist
+                        </button>
+
+                        <!-- Success/Failure Message -->
+                        <div id="wishlistMessage" class="mt-3" style="display: none;"></div>
+
+                        <!-- Request Book Button -->
+                        <form th:action="@{/books/request}" method="post" class="mb-3">
+                            <input type="hidden" name="bookId" th:value="${book.id}">
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="fas fa-book"></i> Request Book
+                            </button>
+                        </form>
+
+                        <!-- Back to Catalog -->
+                        <a th:href="@{/books}" class="btn btn-secondary w-100">
+                            <i class="fas fa-arrow-left"></i> Back to Catalog
+                        </a>
                     </div>
-                    
-                    <!-- Simplified review form -->
-                    <div class="mt-4">
-                        <h4>Write a Review</h4>
-                        <form th:action="@{/books/addReview}" method="post">
+                </div>
+
+                <!-- Review Form -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Write a Review</h5>
+                        <form th:action="@{/books/review}" method="post" id="reviewForm">
                             <input type="hidden" name="bookId" th:value="${book.id}">
                             
-                            <div class="mb-3">
-                                <label for="rating" class="form-label">Rating</label>
-                                <select class="form-select" id="rating" name="rating" required>
-                                    <option value="">Select rating</option>
-                                    <option value="5">5 - Excellent</option>
-                                    <option value="4">4 - Very Good</option>
-                                    <option value="3">3 - Good</option>
-                                    <option value="2">2 - Fair</option>
-                                    <option value="1">1 - Poor</option>
+                            <!-- Rating Input (1-5 stars) -->
+                            <div class="form-group">
+                                <label for="rating">Rating (1 to 5):</label>
+                                <select id="rating" name="rating" class="form-control" required>
+                                    <option value="1">1 Star</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="5">5 Stars</option>
                                 </select>
                             </div>
                             
-                            <div class="mb-3">
-                                <label for="content" class="form-label">Your Review</label>
-                                <textarea class="form-control" id="content" name="content" rows="4" required
-                                          placeholder="Share your thoughts about this book..."></textarea>
+                            <!-- Review Text -->
+                            <div class="form-group">
+                                <textarea name="review" class="form-control" rows="4" placeholder="Write your review here..." required></textarea>
                             </div>
                             
-                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                            <button type="submit" class="btn btn-primary mt-3 w-100">Submit Review</button>
                         </form>
                     </div>
                 </div>
@@ -114,5 +104,62 @@
     </div>
     
     <footer th:replace="fragments/layout :: footer"></footer>
+
+    <!-- JavaScript Section -->
+    <script>
+        // AJAX for review submission
+        document.getElementById("reviewForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const bookId = document.querySelector("input[name='bookId']").value;
+            const rating = document.querySelector("select[name='rating']").value;
+            const review = document.querySelector("textarea[name='review']").value;
+
+            fetch('/books/review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `bookId=${bookId}&rating=${rating}&review=${review}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert("Review submitted successfully!");
+                window.location.reload();
+            })
+            .catch(error => alert("Failed to submit the review."));
+        });
+
+        // AJAX for adding to wishlist
+        function addToWishlist() {
+            const bookId = document.getElementById("addToWishlistBtn").getAttribute("data-book-id");
+            const messageDiv = document.getElementById("wishlistMessage");
+
+            fetch('/books/wishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ bookId: bookId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = data.message;
+                if (data.success) {
+                    messageDiv.classList.add("text-success");
+                    messageDiv.classList.remove("text-danger");
+                } else {
+                    messageDiv.classList.add("text-danger");
+                    messageDiv.classList.remove("text-success");
+                }
+            })
+            .catch(error => {
+                messageDiv.style.display = 'block';
+                messageDiv.textContent = "Failed to add to wishlist.";
+                messageDiv.classList.add("text-danger");
+            });
+        }
+    </script>
 </body>
 </html>

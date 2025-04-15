@@ -4,6 +4,7 @@ public class ReviewDTO {
     private Long userId;
     private Long bookId;
     private String reviewText;
+    private int rating;  // Add the rating field
 
     // Getters and Setters
     public Long getUserId() {
@@ -28,5 +29,13 @@ public class ReviewDTO {
 
     public void setReviewText(String reviewText) {
         this.reviewText = reviewText;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 }

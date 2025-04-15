@@ -26,37 +26,91 @@
             </div>
             
             <div class="col-md-9">
-                <!-- Simple Profile Content -->
+                <!-- Profile Content -->
                 <div id="profile-content">
                     <h3>Profile Information</h3>
-                    
                     <div class="card">
                         <div class="card-body">
-                            <p th:if="${user != null}">
-                                <strong>Username:</strong> <span th:text="${user.username}">username</span><br>
-                                <strong>Email:</strong> <span th:text="${user.email}">email@example.com</span><br>
-                                <strong>Full Name:</strong> <span th:text="${user.fullName}">Full Name</span><br>
-                            </p>
-                            <p th:unless="${user != null}">User information not available.</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>
+                                        <strong>Username:</strong> <span th:text="${user.username}">username</span><br>
+                                        <strong>Email:</strong> <span th:text="${user.email}">email@example.com</span><br>
+                                        <strong>Full Name:</strong> <span th:text="${user.fullName}">Full Name</span><br>
+                                        <strong>Coins:</strong> <span th:text="${user.coins}">0</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                        <strong>Membership Type:</strong> <span th:text="${user.membershipType}">Basic</span><br>
+                                        <strong>Status:</strong> <span th:text="${user.status}">Active</span><br>
+                                        <strong>Member Since:</strong> <span th:text="${#temporals.format(user.membershipStartDate, 'dd MMM yyyy')}">01 Jan 2024</span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Borrowed Books (Hidden) -->
+                <!-- Borrowed Books -->
                 <div id="borrowed-books-content" style="display: none;">
                     <h3>My Borrowed Books</h3>
-                    
-                    <div class="alert alert-info">
-                        You don't have any borrowed books. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to borrow books.
+                    <div class="row">
+                        <div class="col-12" th:if="${borrowedBooks == null || borrowedBooks.empty}">
+                            <div class="alert alert-info">
+                                You don't have any borrowed books. <a th:href="@{/books}" class="alert-link">Browse our catalog</a> to borrow books.
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4" th:each="transaction : ${borrowedBooks}">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${transaction.book.title}">Book Title</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted" th:text="${transaction.book.author}">Author</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">Borrowed on: <span th:text="${#temporals.format(transaction.borrowDate, 'dd MMM yyyy')}">01 Apr 2024</span></small><br>
+                                        <small class="text-muted">Due on: <span th:text="${#temporals.format(transaction.dueDate, 'dd MMM yyyy')}">15 Apr 2024</span></small>
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <form th:action="@{/books/return}" method="post">
+                                        <input type="hidden" name="transactionId" th:value="${transaction.id}">
+                                        <button type="submit" class="btn btn-primary">Return Book</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Wishlist (Hidden) -->
+                <!-- Wishlist -->
                 <div id="wishlist-content" style="display: none;">
                     <h3>My Wishlist</h3>
-                    
-                    <div class="alert alert-info">
-                        Your wishlist is empty. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to add books to your wishlist.
+                    <div class="row">
+                        <div class="col-12" th:if="${wishlist == null || wishlist.empty}">
+                            <div class="alert alert-info">
+                                Your wishlist is empty. <a th:href="@{/books}" class="alert-link">Browse our catalog</a> to add books to your wishlist.
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4" th:each="item : ${wishlist}">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${item.book.title}">Book Title</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted" th:text="${item.book.author}">Author</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">Added on: <span th:text="${#temporals.format(item.addedDate, 'dd MMM yyyy')}">01 Apr 2024</span></small>
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <a th:href="@{/books/view/{id}(id=${item.book.id})}" class="btn btn-primary">View Details</a>
+                                        <form th:action="@{/books/removeFromWishlist}" method="post">
+                                            <input type="hidden" name="wishlistItemId" th:value="${item.id}">
+                                            <button type="submit" class="btn btn-danger">Remove</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,57 +119,34 @@
     
     <footer th:replace="fragments/layout :: footer"></footer>
     
-    <!-- Simple Tab Script -->
+    <!-- Tab Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Get all tab elements
-            const profileTab = document.getElementById('profile-tab');
-            const borrowedBooksTab = document.getElementById('borrowed-books-tab');
-            const wishlistTab = document.getElementById('wishlist-tab');
+            const tabs = {
+                'profile-tab': 'profile-content',
+                'borrowed-books-tab': 'borrowed-books-content',
+                'wishlist-tab': 'wishlist-content'
+            };
             
-            // Get all content elements
-            const profileContent = document.getElementById('profile-content');
-            const borrowedBooksContent = document.getElementById('borrowed-books-content');
-            const wishlistContent = document.getElementById('wishlist-content');
-            
-            // Add click event listeners
-            profileTab.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Set active tab
-                profileTab.classList.add('active');
-                borrowedBooksTab.classList.remove('active');
-                wishlistTab.classList.remove('active');
+            Object.entries(tabs).forEach(([tabId, contentId]) => {
+                const tab = document.getElementById(tabId);
+                const content = document.getElementById(contentId);
                 
-                // Show/hide content
-                profileContent.style.display = 'block';
-                borrowedBooksContent.style.display = 'none';
-                wishlistContent.style.display = 'none';
-            });
-            
-            borrowedBooksTab.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Set active tab
-                profileTab.classList.remove('active');
-                borrowedBooksTab.classList.add('active');
-                wishlistTab.classList.remove('active');
-                
-                // Show/hide content
-                profileContent.style.display = 'none';
-                borrowedBooksContent.style.display = 'block';
-                wishlistContent.style.display = 'none';
-            });
-            
-            wishlistTab.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Set active tab
-                profileTab.classList.remove('active');
-                borrowedBooksTab.classList.remove('active');
-                wishlistTab.classList.add('active');
-                
-                // Show/hide content
-                profileContent.style.display = 'none';
-                borrowedBooksContent.style.display = 'none';
-                wishlistContent.style.display = 'block';
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active tab
+                    document.querySelectorAll('.list-group-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    tab.classList.add('active');
+                    
+                    // Show/hide content
+                    Object.values(tabs).forEach(id => {
+                        document.getElementById(id).style.display = 'none';
+                    });
+                    content.style.display = 'block';
+                });
             });
         });
     </script>

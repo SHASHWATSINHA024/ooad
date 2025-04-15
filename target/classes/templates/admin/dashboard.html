@@ -136,7 +136,10 @@
                                             <td th:text="${user.username}">username</td>
                                             <td th:text="${user.fullName}">Full Name</td>
                                             <td th:text="${user.email}">email@example.com</td>
-                                            <td th:text="${user.role}">MEMBER</td>
+                                            <td>
+                                                <span class="badge" th:classappend="${user.role == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-primary'}" 
+                                                      th:text="${user.role == 'ROLE_ADMIN' ? 'Admin' : 'User'}">ROLE</span>
+                                            </td>
                                             <td>
                                                 <span class="badge bg-success" th:if="${user.active}">Active</span>
                                                 <span class="badge bg-danger" th:unless="${user.active}">Inactive</span>
@@ -145,6 +148,12 @@
                                                 <div class="btn-group btn-group-sm">
                                                     <a th:href="@{/admin/users/{id}/edit(id=${user.id})}" class="btn btn-outline-primary">Edit</a>
                                                     <a th:href="@{/admin/users/{id}/transactions(id=${user.id})}" class="btn btn-outline-info">Transactions</a>
+                                                    <!-- Only show role toggle for non-admin users -->
+                                                    <button th:if="${user.role != 'ROLE_ADMIN'}" class="btn btn-outline-warning"
+                                                            onclick="if(confirm('Are you sure you want to toggle this user\'s role?'))
+                                                                    { document.getElementById('role-form-' + [[${user.id}]]).submit(); }">
+                                                        Toggle Role
+                                                    </button>
                                                     <button th:if="${user.active}" class="btn btn-outline-danger" 
                                                             onclick="if(confirm('Are you sure you want to disable this user?')) 
                                                                         { document.getElementById('disable-form-' + [[${user.id}]]).submit(); }">
@@ -157,6 +166,7 @@
                                                     </button>
                                                     <form th:id="'disable-form-' + ${user.id}" th:action="@{/admin/users/{id}/disable(id=${user.id})}" method="post" style="display: none;"></form>
                                                     <form th:id="'enable-form-' + ${user.id}" th:action="@{/admin/users/{id}/enable(id=${user.id})}" method="post" style="display: none;"></form>
+                                                    <form th:id="'role-form-' + ${user.id}" th:action="@{/admin/users/{id}/toggle-role(id=${user.id})}" method="post" style="display: none;"></form>
                                                 </div>
                                             </td>
                                         </tr>

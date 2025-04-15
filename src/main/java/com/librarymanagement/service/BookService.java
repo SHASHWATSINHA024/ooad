@@ -1,7 +1,5 @@
 package com.librarymanagement.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +17,117 @@ public class BookService {
 
     @Autowired
     private BookRepository bookRepository;
-    
+
     @Autowired
     private BookReviewRepository bookReviewRepository;
 
+    // Add book
     public String addBook(BookDTO bookDTO) {
         Book book = new Book();
+        setBookDetails(book, bookDTO);  // Using the common method to set book details
+        bookRepository.save(book);
+        return "Book added successfully!";
+    }
+
+    // Get all books
+    public List<BookDTO> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        List<BookDTO> bookDTOs = new ArrayList<>();
+        for (Book book : books) {
+            bookDTOs.add(convertToDTO(book));
+        }
+        return bookDTOs;
+    }
+
+    // Get book by ID
+    public BookDTO getBook(Long id) {
+        Book book = bookRepository.findById(id).orElse(null);
+        if (book == null) {
+            return null;
+        }
+        return convertToDTO(book);
+    }
+
+    // Get top books
+    public List<BookDTO> getTopBooks(int limit) {
+        List<Book> books = bookRepository.findTopBooks(); // Assuming this is a custom query in your repo
+        List<BookDTO> bookDTOs = new ArrayList<>();
+        int count = 0;
+        for (Book book : books) {
+            if (count >= limit) {
+                break;
+            }
+            bookDTOs.add(convertToDTO(book));
+            count++;
+        }
+        return bookDTOs;
+    }
+
+    // Update book
+    public String updateBook(Long id, BookDTO bookDTO) {
+        Optional<Book> bookOpt = bookRepository.findById(id);
+        if (bookOpt.isEmpty()) {
+            return "Book not found";
+        }
+        Book book = bookOpt.get();
+        setBookDetails(book, bookDTO);
+        bookRepository.save(book);
+        return "Book updated successfully!";
+    }
+
+    // Delete book
+    public String deleteBook(Long id) {
+        if (!bookRepository.existsById(id)) {
+            return "Book not found";
+        }
+        bookRepository.deleteById(id);
+        return "Book deleted successfully!";
+    }
+
+    // Buy book
+    public boolean buyBook(Long bookId, Long userId) {
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book == null || book.getStock() <= 0) {
+            return false; // Not found or no stock available
+        }
+        book.setStock(book.getStock() - 1);
+        bookRepository.save(book);
+        return true;
+    }
+
+    // Request book
+    public boolean requestBook(Long bookId, Long userId) {
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book == null) {
+            return false; // Book not found
+        }
+        // You can add a request queue logic here
+        return true;
+    }
+
+    // Convert entity to DTO
+    private BookDTO convertToDTO(Book book) {
+        Double avgRating = bookReviewRepository.findAverageRatingByBookId(book.getId());
+        return new BookDTO(
+            book.getId(),
+            book.getTitle(),
+            book.getAuthor(),
+            book.getIsbn(),
+            book.getDescription(),
+            book.getCategory(),
+            book.getPrice(),
+            book.getStock(),
+            book.getCoinPrice(),
+            book.getBorrowCount(),
+            book.getPublishDate(),
+            avgRating,
+            book.getAvailableCopies(),  // Include availableCopies
+            book.getTotalCopies()       // Include totalCopies
+        );
+    }
+
+    // Set book details
+    private void setBookDetails(Book book, BookDTO bookDTO) {
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(bookDTO.getAuthor());
         book.setCategory(bookDTO.getCategory());
@@ -34,134 +137,5 @@ public class BookService {
         book.setStock(bookDTO.getStock());
         book.setCoinPrice(bookDTO.getCoinPrice());
         book.setPublishDate(bookDTO.getPublishDate());
-
-        bookRepository.save(book);
-        return "Book added successfully!";
-    }
-    
-    public List<BookDTO> getAllBooks() {
-        List<Book> books = bookRepository.findAll();
-        List<BookDTO> bookDTOs = new ArrayList<>();
-        
-        for (Book book : books) {
-            BookDTO bookDTO = convertToDTO(book);
-            bookDTOs.add(bookDTO);
-        }
-        
-        return bookDTOs;
-    }
-
-    public BookDTO getBook(Long id) {
-        Book book = bookRepository.findById(id).orElse(null);
-
-        if (book == null) {
-            return null; // Or handle it with an exception
-        }
-
-        return convertToDTO(book);
-    }
-    
-    public List<BookDTO> searchBooks(String keyword) {
-        List<Book> books = bookRepository.findByKeyword(keyword);
-        List<BookDTO> bookDTOs = new ArrayList<>();
-        
-        for (Book book : books) {
-            BookDTO bookDTO = convertToDTO(book);
-            bookDTOs.add(bookDTO);
-        }
-        
-        return bookDTOs;
-    }
-    
-    public List<BookDTO> getTopBooks(int limit) {
-        List<Book> books = bookRepository.findTopBooks();
-        List<BookDTO> bookDTOs = new ArrayList<>();
-        
-        // Limit the results
-        int count = 0;
-        for (Book book : books) {
-            if (count >= limit) {
-                break;
-            }
-            
-            BookDTO bookDTO = convertToDTO(book);
-            bookDTOs.add(bookDTO);
-            count++;
-        }
-        
-        return bookDTOs;
-    }
-    
-    public String updateBook(Long id, BookDTO bookDTO) {
-        Optional<Book> bookOpt = bookRepository.findById(id);
-        
-        if (bookOpt.isEmpty()) {
-            return "Book not found";
-        }
-        
-        Book book = bookOpt.get();
-        
-        if (bookDTO.getTitle() != null) {
-            book.setTitle(bookDTO.getTitle());
-        }
-        if (bookDTO.getAuthor() != null) {
-            book.setAuthor(bookDTO.getAuthor());
-        }
-        if (bookDTO.getCategory() != null) {
-            book.setCategory(bookDTO.getCategory());
-        }
-        if (bookDTO.getPrice() != null) {
-            book.setPrice(bookDTO.getPrice());
-        }
-        if (bookDTO.getIsbn() != null) {
-            book.setIsbn(bookDTO.getIsbn());
-        }
-        if (bookDTO.getDescription() != null) {
-            book.setDescription(bookDTO.getDescription());
-        }
-        if (bookDTO.getStock() > 0) {
-            book.setStock(bookDTO.getStock());
-        }
-        if (bookDTO.getCoinPrice() >= 0) {
-            book.setCoinPrice(bookDTO.getCoinPrice());
-        }
-        if (bookDTO.getPublishDate() != null) {
-            book.setPublishDate(bookDTO.getPublishDate());
-        }
-        
-        bookRepository.save(book);
-        return "Book updated successfully!";
-    }
-    
-    public String deleteBook(Long id) {
-        if (!bookRepository.existsById(id)) {
-            return "Book not found";
-        }
-        
-        bookRepository.deleteById(id);
-        return "Book deleted successfully!";
-    }
-    
-    // Helper method to convert Book entity to BookDTO
-    private BookDTO convertToDTO(Book book) {
-        Double avgRating = null;
-        if (bookReviewRepository != null) {
-            avgRating = bookReviewRepository.findAverageRatingByBookId(book.getId());
-        }
-        
-        return new BookDTO(
-            book.getId(),
-            book.getTitle(), 
-            book.getAuthor(), 
-            book.getIsbn(),
-            book.getDescription(),
-            book.getCategory(), 
-            book.getPrice(),
-            book.getStock(),
-            book.getCoinPrice(),
-            book.getBorrowCount(),
-            book.getPublishDate(),
-            avgRating
-        );
     }
 }

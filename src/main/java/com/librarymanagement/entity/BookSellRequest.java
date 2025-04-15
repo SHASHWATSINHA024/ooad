@@ -12,7 +12,7 @@ public class BookSellRequest {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "submitted_by_user_id", nullable = false)
     private User user;
     
     @Column(nullable = false)
@@ -37,8 +37,8 @@ public class BookSellRequest {
     private LocalDateTime reviewedDate;
     
     @ManyToOne
-    @JoinColumn(name = "librarian_id")
-    private Librarian reviewedBy;
+    @JoinColumn(name = "reviewed_by_user_id")
+    private User reviewedBy;
     
     // Enum for request status
     public enum RequestStatus {
@@ -47,7 +47,7 @@ public class BookSellRequest {
     
     // Constructors
     public BookSellRequest() {}
-    
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -137,11 +137,11 @@ public class BookSellRequest {
         this.reviewedDate = reviewedDate;
     }
     
-    public Librarian getReviewedBy() {
+    public User getReviewedBy() {
         return reviewedBy;
     }
     
-    public void setReviewedBy(Librarian reviewedBy) {
+    public void setReviewedBy(User reviewedBy) {
         this.reviewedBy = reviewedBy;
     }
-} 
+}

@@ -1,100 +1,121 @@
 package com.librarymanagement.controller;
 
+import com.librarymanagement.dto.BookDTO;
+import com.librarymanagement.dto.UserDTO;
+import com.librarymanagement.service.BookService;
+import com.librarymanagement.service.ReviewService;
+import com.librarymanagement.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.librarymanagement.dto.UserDTO;
-import com.librarymanagement.entity.Book;
-import com.librarymanagement.entity.User;
-import com.librarymanagement.service.BookService;
-import com.librarymanagement.repository.BookRepository;
-import com.librarymanagement.repository.UserRepository;
-import com.librarymanagement.service.WishlistService;
 
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/books/view")  // Keep your original mapping
+@RequestMapping("/books")
 public class BookWebController {
-    
+
     @Autowired
     private BookService bookService;
-    
-    @Autowired
-    private BookRepository bookRepository;
-    
-    @Autowired
-    private UserRepository userRepository;
-    
+
     @Autowired
     private WishlistService wishlistService;
-    
+
+    @Autowired
+    private ReviewService reviewService;
+
+    // List all books
     @GetMapping
     public String listBooks(Model model) {
         try {
             model.addAttribute("books", bookService.getAllBooks());
         } catch (Exception e) {
             model.addAttribute("books", Collections.emptyList());
+            System.err.println("Error fetching books: " + e.getMessage());
         }
         return "books/list";
     }
-    
-    @GetMapping("/{id}")
-    public String viewBook(@PathVariable Long id, Model model) {
+
+    // View details of a single book
+    @GetMapping("/view/{id}")
+    public String viewBook(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            model.addAttribute("book", bookService.getBook(id));
+            BookDTO book = bookService.getBook(id);
+            if (book == null) {
+                redirectAttributes.addFlashAttribute("error", "Book not found");
+                return "redirect:/books";
+            }
+
+            model.addAttribute("book", book);
+            model.addAttribute("reviews", reviewService.getReviewsByBookId(id));
+
         } catch (Exception e) {
-            // Handle error
+            redirectAttributes.addFlashAttribute("error", "Error retrieving book: " + e.getMessage());
+            return "redirect:/books";
         }
         return "books/detail";
     }
-    
-    // Add this method for wishlist functionality
-    @PostMapping("/addToWishlist")
-    public String addToWishlist(@RequestParam("bookId") Long bookId, 
-                                HttpSession session,
-                                RedirectAttributes redirectAttributes) {
-        try {
-            // Get current user from session
-            UserDTO userDTO = (UserDTO) session.getAttribute("currentUser");
-            
-            if (userDTO == null) {
-                redirectAttributes.addFlashAttribute("error", "Please log in to add books to your wishlist");
-                return "redirect:/auth/login";
-            }
-            
-            // Get user and book
-            User user = userRepository.findById(userDTO.getId()).orElse(null);
-            Book book = bookRepository.findById(bookId).orElse(null);
-            
-            if (user == null || book == null) {
-                redirectAttributes.addFlashAttribute("error", "User or book not found");
-                return "redirect:/books/view/" + bookId;
-            }
-            
-            // Check if already in wishlist
-            boolean alreadyInWishlist = wishlistService.isBookInWishlist(user, book);
-            
-            if (alreadyInWishlist) {
-                redirectAttributes.addFlashAttribute("message", "This book is already in your wishlist");
-            } else {
-                // Add to wishlist
-                wishlistService.addToWishlist(user, book);
-                redirectAttributes.addFlashAttribute("message", "Book added to your wishlist successfully");
-            }
-            
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Failed to add book to wishlist: " + e.getMessage());
+
+    // Add to wishlist (AJAX version)
+    @PostMapping("/wishlist")
+    @ResponseBody
+    public ResponseEntity<?> addToWishlistAjax(@RequestBody Map<String, Long> data, HttpSession session) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("currentUser");
+
+        if (userDTO == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Please log in."));
         }
-        
+
+        Long bookId = data.get("bookId");
+
+        boolean success = wishlistService.addToWishlist(userDTO.getId(), bookId);
+
+        if (success) {
+            return ResponseEntity.ok(Map.of("success", true, "message", "Book added to wishlist successfully."));
+        } else {
+            return ResponseEntity.ok(Map.of("success", false, "message", "Book is already in your wishlist."));
+        }
+    }
+
+    // Submit a review
+    @PostMapping("/review")
+    public String submitReview(@RequestParam Long bookId, @RequestParam int rating, @RequestParam String review, RedirectAttributes redirectAttributes) {
+        try {
+            reviewService.addReview(bookId, bookId, review, rating); // Use correct parameters
+            redirectAttributes.addFlashAttribute("message", "Review submitted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to submit the review.");
+        }
+        return "redirect:/books/view/" + bookId;
+    }
+
+    // Purchase a book
+    @PostMapping("/buy")
+    public String buyBook(@RequestParam Long bookId, RedirectAttributes redirectAttributes, HttpSession session) {
+        UserDTO userDTO = (UserDTO) session.getAttribute("currentUser");
+
+        if (userDTO == null) {
+            redirectAttributes.addFlashAttribute("error", "Please log in to buy a book.");
+            return "redirect:/books/view/" + bookId;
+        }
+
+        try {
+            boolean success = bookService.buyBook(bookId, userDTO.getId());
+            if (success) {
+                redirectAttributes.addFlashAttribute("message", "Book purchased successfully!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Not enough stock available for purchase.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error processing your purchase: " + e.getMessage());
+        }
+
         return "redirect:/books/view/" + bookId;
     }
 }

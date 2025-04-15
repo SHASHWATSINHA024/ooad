@@ -3,6 +3,7 @@ package com.librarymanagement.repository;
 import com.librarymanagement.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("SELECT b FROM Book b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(b.author) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(b.category) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Book> findByKeyword(String keyword);
+    List<Book> findByKeyword(@Param("keyword") String keyword);
     
     @Query("SELECT b FROM Book b ORDER BY b.borrowCount DESC")
     List<Book> findTopBooks();
@@ -29,4 +30,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByStockLessThanEqual(int maxStock);
 
     List<Book> findByIsbn(String isbn);
+
+    @Query("SELECT b FROM Book b")
+    List<Book> findAllBooks();
 }

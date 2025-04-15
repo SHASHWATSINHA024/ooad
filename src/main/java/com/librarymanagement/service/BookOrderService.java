@@ -6,17 +6,18 @@ import org.springframework.stereotype.Service;
 import com.librarymanagement.dto.BookOrderDTO;
 import com.librarymanagement.entity.Book;
 import com.librarymanagement.entity.BookOrder;
-import com.librarymanagement.entity.Librarian;
+import com.librarymanagement.entity.User;
 import com.librarymanagement.entity.BookOrder.OrderStatus;
 import com.librarymanagement.repository.BookOrderRepository;
 import com.librarymanagement.repository.BookRepository;
-import com.librarymanagement.repository.LibrarianRepository;
+import com.librarymanagement.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookOrderService {
@@ -25,7 +26,7 @@ public class BookOrderService {
     private BookOrderRepository bookOrderRepository;
     
     @Autowired
-    private LibrarianRepository librarianRepository;
+    private UserRepository userRepository;
     
     @Autowired
     private BookRepository bookRepository;
@@ -34,13 +35,13 @@ public class BookOrderService {
      * Create a new book order
      */
     public BookOrderDTO createOrder(BookOrderDTO orderDTO) {
-        Optional<Librarian> librarianOpt = librarianRepository.findById(orderDTO.getOrderedById());
+        Optional<User> userOpt = userRepository.findById(orderDTO.getOrderedById());
         
-        if (librarianOpt.isEmpty()) {
+        if (userOpt.isEmpty()) {
             return null;
         }
         
-        Librarian librarian = librarianOpt.get();
+        User user = userOpt.get();
         
         BookOrder order = new BookOrder();
         order.setBookTitle(orderDTO.getBookTitle());
@@ -50,7 +51,7 @@ public class BookOrderService {
         order.setUnitPrice(orderDTO.getUnitPrice());
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
-        order.setOrderedBy(librarian);
+        order.setOrderedBy(user);
         order.setSupplierName(orderDTO.getSupplierName());
         order.setNotes(orderDTO.getNotes());
         
@@ -64,13 +65,9 @@ public class BookOrderService {
      */
     public List<BookOrderDTO> getAllOrders() {
         List<BookOrder> orders = bookOrderRepository.findAll();
-        List<BookOrderDTO> orderDTOs = new ArrayList<>();
-        
-        for (BookOrder order : orders) {
-            orderDTOs.add(convertToDTO(order));
-        }
-        
-        return orderDTOs;
+        return orders.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
     
     /**
@@ -151,23 +148,23 @@ public class BookOrderService {
         }
     }
     
-    // Helper method to convert entity to DTO
+    /**
+     * Convert entity to DTO
+     */
     private BookOrderDTO convertToDTO(BookOrder order) {
-        BookOrderDTO orderDTO = new BookOrderDTO();
-        orderDTO.setId(order.getId());
-        orderDTO.setBookTitle(order.getBookTitle());
-        orderDTO.setBookAuthor(order.getBookAuthor());
-        orderDTO.setIsbn(order.getIsbn());
-        orderDTO.setQuantity(order.getQuantity());
-        orderDTO.setUnitPrice(order.getUnitPrice());
-        orderDTO.setOrderDate(order.getOrderDate());
-        orderDTO.setStatus(order.getStatus().toString());
-        orderDTO.setDeliveryDate(order.getDeliveryDate());
-        orderDTO.setOrderedById(order.getOrderedBy().getId());
-        orderDTO.setOrderedByName(order.getOrderedBy().getUsername());
-        orderDTO.setSupplierName(order.getSupplierName());
-        orderDTO.setNotes(order.getNotes());
-        
-        return orderDTO;
+        BookOrderDTO dto = new BookOrderDTO();
+        dto.setId(order.getId());
+        dto.setBookTitle(order.getBookTitle());
+        dto.setBookAuthor(order.getBookAuthor());
+        dto.setIsbn(order.getIsbn());
+        dto.setQuantity(order.getQuantity());
+        dto.setUnitPrice(order.getUnitPrice());
+        dto.setOrderDate(order.getOrderDate());
+        dto.setStatus(order.getStatus().toString());
+        dto.setDeliveryDate(order.getDeliveryDate());
+        dto.setOrderedById(order.getOrderedBy().getId());
+        dto.setSupplierName(order.getSupplierName());
+        dto.setNotes(order.getNotes());
+        return dto;
     }
 } 

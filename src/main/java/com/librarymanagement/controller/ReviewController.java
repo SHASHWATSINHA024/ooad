@@ -25,7 +25,8 @@ public class ReviewController {
         return reviewService.addReview(
             reviewDTO.getUserId(),
             reviewDTO.getBookId(),
-            reviewDTO.getReviewText()
+            reviewDTO.getReviewText(),
+            reviewDTO.getRating()  // Pass the rating to the service
         );
     }
 
