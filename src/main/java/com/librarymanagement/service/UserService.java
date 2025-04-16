@@ -39,6 +39,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setEmail(userDTO.getEmail());
         user.setFullName(userDTO.getFullName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setAddress(userDTO.getAddress());
         user.setCoins(0);
         user.setStatus(UserStatus.PENDING);
         user.setRole(userDTO.getRole() != null ? userDTO.getRole() : "USER");
@@ -51,6 +53,8 @@ public class UserService {
         savedUserDTO.setUsername(savedUser.getUsername());
         savedUserDTO.setEmail(savedUser.getEmail());
         savedUserDTO.setFullName(savedUser.getFullName());
+        savedUserDTO.setPhoneNumber(savedUser.getPhoneNumber());
+        savedUserDTO.setAddress(savedUser.getAddress());
         savedUserDTO.setCoins(savedUser.getCoins());
         savedUserDTO.setStatus(savedUser.getStatus().toString());
         savedUserDTO.setRole(savedUser.getRole());
@@ -72,6 +76,8 @@ public class UserService {
                 userDTO.setUsername(user.getUsername());
                 userDTO.setEmail(user.getEmail());
                 userDTO.setFullName(user.getFullName());
+                userDTO.setPhoneNumber(user.getPhoneNumber());
+                userDTO.setAddress(user.getAddress());
                 userDTO.setCoins(user.getCoins());
                 userDTO.setStatus(user.getStatus().toString());
                 userDTO.setRole(user.getRole());
@@ -95,6 +101,8 @@ public class UserService {
             userDTO.setUsername(user.getUsername());
             userDTO.setEmail(user.getEmail());
             userDTO.setFullName(user.getFullName());
+            userDTO.setPhoneNumber(user.getPhoneNumber());
+            userDTO.setAddress(user.getAddress());
             userDTO.setCoins(user.getCoins());
             userDTO.setStatus(user.getStatus().toString());
             userDTO.setRole(user.getRole());
@@ -116,6 +124,8 @@ public class UserService {
             userDTO.setUsername(user.getUsername());
             userDTO.setEmail(user.getEmail());
             userDTO.setFullName(user.getFullName());
+            userDTO.setPhoneNumber(user.getPhoneNumber());
+            userDTO.setAddress(user.getAddress());
             userDTO.setCoins(user.getCoins());
             userDTO.setStatus(user.getStatus().toString());
             userDTO.setRole(user.getRole());
@@ -146,6 +156,14 @@ public class UserService {
                 user.setEmail(userDTO.getEmail());
             }
             
+            if (userDTO.getPhoneNumber() != null) {
+                user.setPhoneNumber(userDTO.getPhoneNumber());
+            }
+            
+            if (userDTO.getAddress() != null) {
+                user.setAddress(userDTO.getAddress());
+            }
+            
             if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             }
@@ -170,6 +188,8 @@ public class UserService {
             updatedUserDTO.setUsername(updatedUser.getUsername());
             updatedUserDTO.setEmail(updatedUser.getEmail());
             updatedUserDTO.setFullName(updatedUser.getFullName());
+            updatedUserDTO.setPhoneNumber(updatedUser.getPhoneNumber());
+            updatedUserDTO.setAddress(updatedUser.getAddress());
             updatedUserDTO.setCoins(updatedUser.getCoins());
             updatedUserDTO.setStatus(updatedUser.getStatus().toString());
             updatedUserDTO.setRole(updatedUser.getRole());
@@ -242,6 +262,8 @@ public class UserService {
                 dto.setUsername(user.getUsername());
                 dto.setEmail(user.getEmail());
                 dto.setFullName(user.getFullName());
+                dto.setPhoneNumber(user.getPhoneNumber());
+                dto.setAddress(user.getAddress());
                 dto.setCoins(user.getCoins());
                 dto.setStatus(user.getStatus().toString());
                 dto.setRole(user.getRole());
