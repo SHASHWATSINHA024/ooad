@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Defaulted Members')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Defaulted Members</h1>
+            <a th:href="@{/librarian/dashboard}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Members with Overdue Books</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${defaultedMembers != null && !defaultedMembers.empty}">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Member ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Overdue Books</th>
+                                    <th>Days Overdue</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="member : ${defaultedMembers}">
+                                    <td th:text="${member.id}">1</td>
+                                    <td>
+                                        <a th:href="@{/librarian/members/{id}(id=${member.id})}" th:text="${member.fullName}">John Doe</a>
+                                    </td>
+                                    <td th:text="${member.email}">john@example.com</td>
+                                    <td th:text="${member.phoneNumber}">123-456-7890</td>
+                                    <td th:text="${member.overdueBookCount}">2</td>
+                                    <td>
+                                        <span class="badge bg-danger" th:text="${member.maxDaysOverdue}">15</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary" 
+                                                data-bs-toggle="modal" 
+                                                th:data-bs-target="${'#detailsModal-' + member.id}">
+                                            View Details
+                                        </button>
+                                        <a th:href="@{/librarian/members/{id}/notify(id=${member.id})}" class="btn btn-sm btn-warning">
+                                            Notify
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Details Modals (one for each defaulted member) -->
+                    <div th:each="member : ${defaultedMembers}" 
+                         th:id="${'detailsModal-' + member.id}" 
+                         class="modal fade" 
+                         tabindex="-1" 
+                         aria-labelledby="detailsModalLabel" 
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="detailsModalLabel">
+                                        Overdue Books for <span th:text="${member.fullName}">John Doe</span>
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Book Title</th>
+                                                    <th>Borrowed Date</th>
+                                                    <th>Due Date</th>
+                                                    <th>Days Overdue</th>
+                                                    <th>Late Fee</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="book : ${member.overdueBooks}">
+                                                    <td>
+                                                        <a th:href="@{/books/view/{id}(id=${book.bookId})}" th:text="${book.bookTitle}">Book Title</a>
+                                                    </td>
+                                                    <td th:text="${#temporals.format(book.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                                    <td th:text="${#temporals.format(book.dueDate, 'dd MMM yyyy')}">15 Jan 2023</td>
+                                                    <td>
+                                                        <span class="badge bg-danger" th:text="${book.daysOverdue}">15</span>
+                                                    </td>
+                                                    <td th:text="${'$' + book.lateFee}">$7.50</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="4" class="text-end">Total Late Fees:</th>
+                                                    <th th:text="${'$' + member.totalLateFees}">$15.00</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    
+                                    <h6 class="mt-4">Contact Information</h6>
+                                    <dl class="row">
+                                        <dt class="col-sm-3">Email:</dt>
+                                        <dd class="col-sm-9" th:text="${member.email}">john@example.com</dd>
+                                        
+                                        <dt class="col-sm-3">Phone:</dt>
+                                        <dd class="col-sm-9" th:text="${member.phoneNumber}">123-456-7890</dd>
+                                        
+                                        <dt class="col-sm-3">Address:</dt>
+                                        <dd class="col-sm-9" th:text="${member.address}">123 Main St, City, State</dd>
+                                    </dl>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <a th:href="@{/librarian/members/{id}/notify(id=${member.id})}" class="btn btn-warning">
+                                        Send Reminder
+                                    </a>
+                                    <a th:href="@{/librarian/members/{id}/actions(id=${member.id})}" class="btn btn-danger">
+                                        Take Action
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-success" th:unless="${defaultedMembers != null && !defaultedMembers.empty}">
+                    No members currently have overdue books. All accounts are in good standing.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

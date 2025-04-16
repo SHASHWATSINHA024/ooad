@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Membership Requests')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Membership Requests</h1>
+            <a th:href="@{/librarian/dashboard}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">
+                    Pending <span class="badge bg-danger ms-1" th:if="${pendingRequests != null && !pendingRequests.empty}" th:text="${pendingRequests.size()}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab">Approved</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab">Rejected</a>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Pending Requests Tab -->
+            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${pendingRequests != null && !pendingRequests.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Membership Type</th>
+                                            <th>Request Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="request : ${pendingRequests}">
+                                            <td th:text="${request.id}">1</td>
+                                            <td th:text="${request.userName}">John Doe</td>
+                                            <td th:text="${request.email}">john@example.com</td>
+                                            <td th:text="${request.phoneNumber}">123-456-7890</td>
+                                            <td th:text="${request.membershipType}">BASIC</td>
+                                            <td th:text="${#temporals.format(request.requestDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-primary" 
+                                                        data-bs-toggle="modal" 
+                                                        th:data-bs-target="${'#reviewModal-' + request.id}">
+                                                    Review
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Review Modals (one for each request) -->
+                            <div th:each="request : ${pendingRequests}" 
+                                 th:id="${'reviewModal-' + request.id}" 
+                                 class="modal fade" 
+                                 tabindex="-1" 
+                                 aria-labelledby="reviewModalLabel" 
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="reviewModalLabel">Review Membership Request</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row mb-4">
+                                                <div class="col-md-6">
+                                                    <h6>Request Details</h6>
+                                                    <dl class="row">
+                                                        <dt class="col-sm-4">Name</dt>
+                                                        <dd class="col-sm-8" th:text="${request.userName}">John Doe</dd>
+                                                        
+                                                        <dt class="col-sm-4">Email</dt>
+                                                        <dd class="col-sm-8" th:text="${request.email}">john@example.com</dd>
+                                                        
+                                                        <dt class="col-sm-4">Phone</dt>
+                                                        <dd class="col-sm-8" th:text="${request.phoneNumber}">123-456-7890</dd>
+                                                        
+                                                        <dt class="col-sm-4">Address</dt>
+                                                        <dd class="col-sm-8" th:text="${request.address}">123 Main St, City, State</dd>
+                                                    </dl>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6>Membership Details</h6>
+                                                    <dl class="row">
+                                                        <dt class="col-sm-4">Type</dt>
+                                                        <dd class="col-sm-8" th:text="${request.membershipType}">BASIC</dd>
+                                                        
+                                                        <dt class="col-sm-4">Requested</dt>
+                                                        <dd class="col-sm-8" th:text="${#temporals.format(request.requestDate, 'dd MMM yyyy')}">01 Jan 2023</dd>
+                                                        
+                                                        <dt class="col-sm-4">Message</dt>
+                                                        <dd class="col-sm-8" th:text="${request.message ?: 'No message provided'}">Message</dd>
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                            
+                                            <form id="approveForm" th:action="@{/api/librarians/membership-requests/{id}/approve(id=${request.id})}" method="post">
+                                                <input type="hidden" name="librarianId" th:value="${librarian != null ? librarian.id : ''}">
+                                                <div class="mb-3">
+                                                    <label for="notes" class="form-label">Notes/Comments</label>
+                                                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-danger" 
+                                                    th:onclick="'submitRejectForm(' + ${request.id} + ')'">
+                                                Reject
+                                            </button>
+                                            <button type="button" class="btn btn-success" 
+                                                    th:onclick="'submitApproveForm(' + ${request.id} + ')'">
+                                                Approve
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden Reject Form (submitted via JavaScript) -->
+                            <form id="rejectForm" th:action="@{/api/librarians/membership-requests/0/reject}" method="post" style="display: none;">
+                                <input type="hidden" name="librarianId" th:value="${librarian != null ? librarian.id : ''}">
+                                <input type="hidden" id="rejectNotes" name="notes">
+                            </form>
+                        </div>
+                        <div class="alert alert-info" th:unless="${pendingRequests != null && !pendingRequests.empty}">
+                            No pending membership requests to review.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Approved Requests Tab -->
+            <div class="tab-pane fade" id="approved" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${approvedRequests != null && !approvedRequests.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Membership Type</th>
+                                            <th>Approved On</th>
+                                            <th>Approved By</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="request : ${approvedRequests}">
+                                            <td th:text="${request.id}">1</td>
+                                            <td th:text="${request.userName}">John Doe</td>
+                                            <td th:text="${request.email}">john@example.com</td>
+                                            <td th:text="${request.membershipType}">BASIC</td>
+                                            <td th:text="${#temporals.format(request.responseDate, 'dd MMM yyyy')}">05 Jan 2023</td>
+                                            <td th:text="${request.librarianName}">Librarian Name</td>
+                                            <td th:text="${request.notes ?: 'No notes provided'}">Notes</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" th:unless="${approvedRequests != null && !approvedRequests.empty}">
+                            No approved membership requests to display.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rejected Requests Tab -->
+            <div class="tab-pane fade" id="rejected" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${rejectedRequests != null && !rejectedRequests.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Membership Type</th>
+                                            <th>Rejected On</th>
+                                            <th>Rejected By</th>
+                                            <th>Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="request : ${rejectedRequests}">
+                                            <td th:text="${request.id}">1</td>
+                                            <td th:text="${request.userName}">John Doe</td>
+                                            <td th:text="${request.email}">john@example.com</td>
+                                            <td th:text="${request.membershipType}">BASIC</td>
+                                            <td th:text="${#temporals.format(request.responseDate, 'dd MMM yyyy')}">05 Jan 2023</td>
+                                            <td th:text="${request.librarianName}">Librarian Name</td>
+                                            <td th:text="${request.notes ?: 'No reason provided'}">Reason</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" th:unless="${rejectedRequests != null && !rejectedRequests.empty}">
+                            No rejected membership requests to display.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+    
+    <!-- JavaScript for form submission -->
+    <script>
+        function submitApproveForm(requestId) {
+            const form = document.getElementById('approveForm');
+            form.action = '/api/librarians/membership-requests/' + requestId + '/approve';
+            form.submit();
+        }
+        
+        function submitRejectForm(requestId) {
+            const notes = document.getElementById('notes').value;
+            const rejectNotes = document.getElementById('rejectNotes');
+            const rejectForm = document.getElementById('rejectForm');
+            
+            rejectNotes.value = notes;
+            rejectForm.action = '/api/librarians/membership-requests/' + requestId + '/reject';
+            rejectForm.submit();
+        }
+    </script>
+</body>
+</html> 

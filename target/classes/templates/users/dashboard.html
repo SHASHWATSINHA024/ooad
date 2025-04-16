@@ -9,34 +9,156 @@
         
         <h1>My Dashboard</h1>
         <p class="lead">Welcome, <span th:text="${user != null ? user.fullName : 'User'}">User</span>!</p>
+
+        <!-- User Coins Display -->
+        <div class="d-flex justify-content-end mb-3">
+            <div class="bg-warning text-dark py-2 px-3 rounded">
+                <i class="fas fa-coins"></i> Your Coins: <span th:text="${userCoins != null ? userCoins : 0}">0</span>
+            </div>
+        </div>
+        
+        <!-- Top Books Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Top Books This Month</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" th:if="${topBooks != null && !topBooks.empty}">
+                    <div class="col-md-3 mb-3" th:each="book : ${topBooks.subList(0, T(Math).min(4, topBooks.size()))}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                                <p class="card-text text-muted" th:text="${book.author}">Author</p>
+                                <a th:href="@{/books/view/{id}(id=${book.id})}" class="btn btn-sm btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info" th:if="${topBooks == null || topBooks.empty}">
+                    No popular books to display at this time.
+                </div>
+            </div>
+        </div>
         
         <div class="row mt-4">
             <div class="col-md-3">
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action active" id="profile-tab">
+                    <a href="#" class="list-group-item list-group-item-action active" id="overview-tab">
+                        Dashboard Overview
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" id="profile-tab">
                         Profile Settings
                     </a>
                     <a href="#" class="list-group-item list-group-item-action" id="borrowed-books-tab">
                         Borrowed Books
                     </a>
+                    <a href="#" class="list-group-item list-group-item-action" id="transactions-tab">
+                        Transactions
+                    </a>
                     <a href="#" class="list-group-item list-group-item-action" id="wishlist-tab">
                         My Wishlist
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" id="reviews-tab">
+                        My Reviews
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" id="sell-book-tab">
+                        Sell Books
                     </a>
                 </div>
             </div>
             
             <div class="col-md-9">
-                <!-- Simple Profile Content -->
-                <div id="profile-content">
+                <!-- Dashboard Overview Content -->
+                <div id="overview-content">
+                    <h3>Dashboard Overview</h3>
+                    
+                    <!-- Recent Book Borrowed -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Most Recent Book Borrowed
+                        </div>
+                        <div class="card-body" th:if="${recentBookTransaction != null}">
+                            <h5 class="card-title" th:text="${recentBookTransaction.bookTitle}">Book Title</h5>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Borrowed on <span th:text="${#temporals.format(recentBookTransaction.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</span>
+                                </small>
+                            </p>
+                            <a th:href="@{/books/view/{id}(id=${recentBookTransaction.bookId})}" class="btn btn-sm btn-primary">View Book</a>
+                        </div>
+                        <div class="card-body" th:unless="${recentBookTransaction != null}">
+                            <p class="card-text">You haven't borrowed any books recently.</p>
+                            <a th:href="@{/books/view}" class="btn btn-sm btn-primary">Browse Books</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Borrows with Days Left -->
+                    <div class="card">
+                        <div class="card-header">
+                            Current Borrowed Books
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive" th:if="${currentBorrows != null && !currentBorrows.empty}">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Book</th>
+                                            <th>Borrowed On</th>
+                                            <th>Due Date</th>
+                                            <th>Days Left</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="borrow : ${currentBorrows}">
+                                            <td>
+                                                <a th:href="@{/books/view/{id}(id=${borrow.bookId})}" th:text="${borrow.bookTitle}">Book Title</a>
+                                            </td>
+                                            <td th:text="${#temporals.format(borrow.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                            <td th:text="${#temporals.format(borrow.dueDate, 'dd MMM yyyy')}">15 Jan 2023</td>
+                                            <td>
+                                                <span th:with="daysLeft=${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), borrow.dueDate)}"
+                                                      th:text="${daysLeft}"
+                                                      th:class="${daysLeft <= 3 ? 'text-danger' : (daysLeft <= 7 ? 'text-warning' : 'text-success')}">
+                                                    10
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="alert alert-info" th:unless="${currentBorrows != null && !currentBorrows.empty}">
+                                You don't have any borrowed books due. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to borrow books.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Content (Hidden) -->
+                <div id="profile-content" style="display: none;">
                     <h3>Profile Information</h3>
                     
                     <div class="card">
                         <div class="card-body">
-                            <p th:if="${user != null}">
-                                <strong>Username:</strong> <span th:text="${user.username}">username</span><br>
-                                <strong>Email:</strong> <span th:text="${user.email}">email@example.com</span><br>
-                                <strong>Full Name:</strong> <span th:text="${user.fullName}">Full Name</span><br>
-                            </p>
+                            <form th:if="${user != null}" action="#" th:action="@{/users/update-profile}" method="post">
+                                <input type="hidden" name="id" th:value="${user.id}">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="fullName" name="fullName" th:value="${user.fullName}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="phone" name="phoneNumber" th:value="${user.phoneNumber}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="3" th:text="${user.address}"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </form>
                             <p th:unless="${user != null}">User information not available.</p>
                         </div>
                     </div>
@@ -46,8 +168,67 @@
                 <div id="borrowed-books-content" style="display: none;">
                     <h3>My Borrowed Books</h3>
                     
-                    <div class="alert alert-info">
+                    <div class="table-responsive" th:if="${allBorrows != null && !allBorrows.empty}">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Borrowed On</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="borrow : ${allBorrows}">
+                                    <td>
+                                        <a th:href="@{/books/view/{id}(id=${borrow.bookId})}" th:text="${borrow.bookTitle}">Book Title</a>
+                                    </td>
+                                    <td th:text="${#temporals.format(borrow.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                    <td th:text="${#temporals.format(borrow.dueDate, 'dd MMM yyyy')}">15 Jan 2023</td>
+                                    <td th:text="${borrow.status}">BORROWED</td>
+                                    <td>
+                                        <a th:if="${borrow.status == 'BORROWED'}" th:href="@{/users/{userId}/books/{bookId}/return(userId=${user.id},bookId=${borrow.bookId})}" class="btn btn-sm btn-outline-success">Return</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-info" th:unless="${allBorrows != null && !allBorrows.empty}">
                         You don't have any borrowed books. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to borrow books.
+                    </div>
+                </div>
+                
+                <!-- Transactions (Hidden) -->
+                <div id="transactions-content" style="display: none;">
+                    <h3>My Transactions</h3>
+                    
+                    <div class="table-responsive" th:if="${transactions != null && !transactions.empty}">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Book</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="transaction : ${transactions}">
+                                    <td th:text="${transaction.id}">1</td>
+                                    <td>
+                                        <a th:href="@{/books/view/{id}(id=${transaction.bookId})}" th:text="${transaction.bookTitle}">Book Title</a>
+                                    </td>
+                                    <td th:text="${transaction.type}">BORROW</td>
+                                    <td th:text="${#temporals.format(transaction.timestamp, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                    <td th:text="${transaction.type == 'PURCHASE' ? '$' + transaction.amount : '-'}">$10.99</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-info" th:unless="${transactions != null && !transactions.empty}">
+                        You don't have any transactions yet.
                     </div>
                 </div>
                 
@@ -55,8 +236,120 @@
                 <div id="wishlist-content" style="display: none;">
                     <h3>My Wishlist</h3>
                     
-                    <div class="alert alert-info">
+                    <div class="row" th:if="${wishlist != null && !wishlist.empty}">
+                        <div class="col-md-4 mb-3" th:each="book : ${wishlist}">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                                    <p class="card-text text-muted" th:text="${book.author}">Author</p>
+                                    <div class="d-flex justify-content-between">
+                                        <a th:href="@{/books/view/{id}(id=${book.id})}" class="btn btn-sm btn-outline-primary">View</a>
+                                        <form th:action="@{/users/{id}/books/{bookId}/wishlist(id=${user.id},bookId=${book.id})}" method="post">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" th:unless="${wishlist != null && !wishlist.empty}">
                         Your wishlist is empty. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to add books to your wishlist.
+                    </div>
+                </div>
+                
+                <!-- Reviews (Hidden) -->
+                <div id="reviews-content" style="display: none;">
+                    <h3>My Reviews</h3>
+                    
+                    <div class="list-group" th:if="${myReviews != null && !myReviews.empty}">
+                        <div class="list-group-item" th:each="review : ${myReviews}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    <a th:href="@{/books/view/{id}(id=${review.bookId})}" th:text="${review.bookTitle}">Book Title</a>
+                                </h5>
+                                <small th:text="${#temporals.format(review.timestamp, 'dd MMM yyyy')}">01 Jan 2023</small>
+                            </div>
+                            <div class="mb-2">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:if="${i <= review.rating}"></i>
+                                    <i class="far fa-star" th:unless="${i <= review.rating}"></i>
+                                </span>
+                            </div>
+                            <p class="mb-1" th:text="${review.comment}">Review comment</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" th:unless="${myReviews != null && !myReviews.empty}">
+                        You haven't written any reviews yet. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to find books to review.
+                    </div>
+                </div>
+                
+                <!-- Sell Book (Hidden) -->
+                <div id="sell-book-content" style="display: none;">
+                    <h3>Sell Books to the Library</h3>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="@{/users/{id}/sell-book(id=${user.id})}" method="post">
+                                <div class="mb-3">
+                                    <label for="bookTitle" class="form-label">Book Title</label>
+                                    <input type="text" class="form-control" id="bookTitle" name="title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookAuthor" class="form-label">Author</label>
+                                    <input type="text" class="form-control" id="bookAuthor" name="author" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="isbn" class="form-label">ISBN</label>
+                                    <input type="text" class="form-control" id="isbn" name="isbn">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookDescription" class="form-label">Description</label>
+                                    <textarea class="form-control" id="bookDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bookCondition" class="form-label">Condition</label>
+                                    <select class="form-control" id="bookCondition" name="condition" required>
+                                        <option value="NEW">New</option>
+                                        <option value="LIKE_NEW">Like New</option>
+                                        <option value="VERY_GOOD">Very Good</option>
+                                        <option value="GOOD">Good</option>
+                                        <option value="ACCEPTABLE">Acceptable</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="askingPrice" class="form-label">Asking Price ($)</label>
+                                    <input type="number" step="0.01" class="form-control" id="askingPrice" name="askingPrice" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Request</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Sell Request History -->
+                    <h4 class="mt-4">My Sell Requests</h4>
+                    <div class="table-responsive" th:if="${sellRequests != null && !sellRequests.empty}">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Asking Price</th>
+                                    <th>Status</th>
+                                    <th>Submitted On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="request : ${sellRequests}">
+                                    <td th:text="${request.bookTitle}">Book Title</td>
+                                    <td th:text="${'$' + request.askingPrice}">$10.99</td>
+                                    <td th:text="${request.status}">PENDING</td>
+                                    <td th:text="${#temporals.format(request.timestamp, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-info" th:unless="${sellRequests != null && !sellRequests.empty}">
+                        You haven't submitted any sell requests yet.
                     </div>
                 </div>
             </div>
@@ -65,57 +358,78 @@
     
     <footer th:replace="fragments/layout :: footer"></footer>
     
-    <!-- Simple Tab Script -->
+    <!-- Tab Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Get all tab elements
+            const overviewTab = document.getElementById('overview-tab');
             const profileTab = document.getElementById('profile-tab');
             const borrowedBooksTab = document.getElementById('borrowed-books-tab');
+            const transactionsTab = document.getElementById('transactions-tab');
             const wishlistTab = document.getElementById('wishlist-tab');
+            const reviewsTab = document.getElementById('reviews-tab');
+            const sellBookTab = document.getElementById('sell-book-tab');
             
             // Get all content elements
+            const overviewContent = document.getElementById('overview-content');
             const profileContent = document.getElementById('profile-content');
             const borrowedBooksContent = document.getElementById('borrowed-books-content');
+            const transactionsContent = document.getElementById('transactions-content');
             const wishlistContent = document.getElementById('wishlist-content');
+            const reviewsContent = document.getElementById('reviews-content');
+            const sellBookContent = document.getElementById('sell-book-content');
+            
+            // Function to set active tab and content
+            function setActive(activeTab, activeContent) {
+                // Remove active class from all tabs
+                [overviewTab, profileTab, borrowedBooksTab, transactionsTab, wishlistTab, reviewsTab, sellBookTab].forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Hide all content
+                [overviewContent, profileContent, borrowedBooksContent, transactionsContent, wishlistContent, reviewsContent, sellBookContent].forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                // Set active tab and content
+                activeTab.classList.add('active');
+                activeContent.style.display = 'block';
+            }
             
             // Add click event listeners
+            overviewTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                setActive(overviewTab, overviewContent);
+            });
+            
             profileTab.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Set active tab
-                profileTab.classList.add('active');
-                borrowedBooksTab.classList.remove('active');
-                wishlistTab.classList.remove('active');
-                
-                // Show/hide content
-                profileContent.style.display = 'block';
-                borrowedBooksContent.style.display = 'none';
-                wishlistContent.style.display = 'none';
+                setActive(profileTab, profileContent);
             });
             
             borrowedBooksTab.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Set active tab
-                profileTab.classList.remove('active');
-                borrowedBooksTab.classList.add('active');
-                wishlistTab.classList.remove('active');
-                
-                // Show/hide content
-                profileContent.style.display = 'none';
-                borrowedBooksContent.style.display = 'block';
-                wishlistContent.style.display = 'none';
+                setActive(borrowedBooksTab, borrowedBooksContent);
+            });
+            
+            transactionsTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                setActive(transactionsTab, transactionsContent);
             });
             
             wishlistTab.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Set active tab
-                profileTab.classList.remove('active');
-                borrowedBooksTab.classList.remove('active');
-                wishlistTab.classList.add('active');
-                
-                // Show/hide content
-                profileContent.style.display = 'none';
-                borrowedBooksContent.style.display = 'none';
-                wishlistContent.style.display = 'block';
+                setActive(wishlistTab, wishlistContent);
+            });
+            
+            reviewsTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                setActive(reviewsTab, reviewsContent);
+            });
+            
+            sellBookTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                setActive(sellBookTab, sellBookContent);
             });
         });
     </script>

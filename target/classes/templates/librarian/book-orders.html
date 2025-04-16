@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Book Orders')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Book Orders</h1>
+            <div>
+                <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#newOrderModal">
+                    <i class="fas fa-plus me-2"></i> New Order
+                </button>
+                <a th:href="@{/librarian/dashboard}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- New Order Modal -->
+        <div class="modal fade" id="newOrderModal" tabindex="-1" aria-labelledby="newOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="newOrderModalLabel">Place New Book Order</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/api/librarians/book-orders}" method="post" id="newOrderForm">
+                            <input type="hidden" name="librarianId" th:value="${librarian != null ? librarian.id : ''}">
+                            
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Book Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Author</label>
+                                <input type="text" class="form-control" id="author" name="author" required>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="isbn" class="form-label">ISBN</label>
+                                    <input type="text" class="form-control" id="isbn" name="isbn">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="publisher" class="form-label">Publisher</label>
+                                    <input type="text" class="form-control" id="publisher" name="publisher">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="quantity" class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="unitPrice" class="form-label">Unit Price ($)</label>
+                                    <input type="number" step="0.01" class="form-control" id="unitPrice" name="unitPrice" min="0.01" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="priority" class="form-label">Priority</label>
+                                    <select class="form-control" id="priority" name="priority" required>
+                                        <option value="HIGH">High</option>
+                                        <option value="MEDIUM" selected>Medium</option>
+                                        <option value="LOW">Low</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="supplier" class="form-label">Supplier</label>
+                                <input type="text" class="form-control" id="supplier" name="supplier" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('newOrderForm').submit();">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Book Orders Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">Pending</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="shipped-tab" data-bs-toggle="tab" href="#shipped" role="tab">Shipped</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="delivered-tab" data-bs-toggle="tab" href="#delivered" role="tab">Delivered</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="cancelled-tab" data-bs-toggle="tab" href="#cancelled" role="tab">Cancelled</a>
+            </li>
+        </ul>
+        
+        <div class="tab-content">
+            <!-- Pending Orders Tab -->
+            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${pendingOrders != null && !pendingOrders.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Book Title</th>
+                                            <th>Quantity</th>
+                                            <th>Total Price</th>
+                                            <th>Priority</th>
+                                            <th>Order Date</th>
+                                            <th>Supplier</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="order : ${pendingOrders}">
+                                            <td th:text="${order.id}">100</td>
+                                            <td th:text="${order.title}">Book Title</td>
+                                            <td th:text="${order.quantity}">5</td>
+                                            <td th:text="${'$' + order.totalPrice}">$50.99</td>
+                                            <td>
+                                                <span th:if="${order.priority == 'HIGH'}" class="badge bg-danger">High</span>
+                                                <span th:if="${order.priority == 'MEDIUM'}" class="badge bg-warning">Medium</span>
+                                                <span th:if="${order.priority == 'LOW'}" class="badge bg-info">Low</span>
+                                            </td>
+                                            <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                            <td th:text="${order.supplier}">Supplier Name</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-primary" 
+                                                            data-bs-toggle="modal" 
+                                                            th:data-bs-target="${'#viewOrderModal-' + order.id}">
+                                                        View
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-success" 
+                                                            data-bs-toggle="modal" 
+                                                            th:data-bs-target="${'#markShippedModal-' + order.id}">
+                                                        Mark Shipped
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger" 
+                                                            data-bs-toggle="modal" 
+                                                            th:data-bs-target="${'#cancelOrderModal-' + order.id}">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Modal for each order -->
+                            <div th:each="order : ${pendingOrders}" 
+                                 th:id="${'viewOrderModal-' + order.id}" 
+                                 class="modal fade" 
+                                 tabindex="-1" 
+                                 aria-labelledby="viewOrderModalLabel" 
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="viewOrderModalLabel">
+                                                Order Details #<span th:text="${order.id}">100</span>
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Book Information</h6>
+                                                    <dl class="row">
+                                                        <dt class="col-sm-4">Title</dt>
+                                                        <dd class="col-sm-8" th:text="${order.title}">Book Title</dd>
+                                                        
+                                                        <dt class="col-sm-4">Author</dt>
+                                                        <dd class="col-sm-8" th:text="${order.author}">Author Name</dd>
+                                                        
+                                                        <dt class="col-sm-4">ISBN</dt>
+                                                        <dd class="col-sm-8" th:text="${order.isbn ?: 'Not provided'}">123456789</dd>
+                                                        
+                                                        <dt class="col-sm-4">Publisher</dt>
+                                                        <dd class="col-sm-8" th:text="${order.publisher ?: 'Not specified'}">Publisher Name</dd>
+                                                        
+                                                        <dt class="col-sm-4">Quantity</dt>
+                                                        <dd class="col-sm-8" th:text="${order.quantity}">5</dd>
+                                                    </dl>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6>Order Information</h6>
+                                                    <dl class="row">
+                                                        <dt class="col-sm-4">Order Date</dt>
+                                                        <dd class="col-sm-8" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">01 Jan 2023</dd>
+                                                        
+                                                        <dt class="col-sm-4">Status</dt>
+                                                        <dd class="col-sm-8" th:text="${order.status}">PENDING</dd>
+                                                        
+                                                        <dt class="col-sm-4">Priority</dt>
+                                                        <dd class="col-sm-8">
+                                                            <span th:if="${order.priority == 'HIGH'}" class="badge bg-danger">High</span>
+                                                            <span th:if="${order.priority == 'MEDIUM'}" class="badge bg-warning">Medium</span>
+                                                            <span th:if="${order.priority == 'LOW'}" class="badge bg-info">Low</span>
+                                                        </dd>
+                                                        
+                                                        <dt class="col-sm-4">Unit Price</dt>
+                                                        <dd class="col-sm-8" th:text="${'$' + order.unitPrice}">$10.99</dd>
+                                                        
+                                                        <dt class="col-sm-4">Total Price</dt>
+                                                        <dd class="col-sm-8" th:text="${'$' + order.totalPrice}">$54.95</dd>
+                                                        
+                                                        <dt class="col-sm-4">Supplier</dt>
+                                                        <dd class="col-sm-8" th:text="${order.supplier}">Supplier Name</dd>
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mt-3">
+                                                <h6>Notes</h6>
+                                                <p th:text="${order.notes ?: 'No notes provided'}">Order notes</p>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mark Shipped Modal -->
+                            <div th:each="order : ${pendingOrders}" 
+                                 th:id="${'markShippedModal-' + order.id}" 
+                                 class="modal fade" 
+                                 tabindex="-1" 
+                                 aria-labelledby="markShippedModalLabel" 
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="markShippedModalLabel">Mark Order as Shipped</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form th:action="@{/api/librarians/book-orders/{id}/status(id=${order.id})}" method="post" th:id="${'shippedForm-' + order.id}">
+                                                <input type="hidden" name="status" value="SHIPPED">
+                                                <input type="hidden" name="librarianId" th:value="${librarian != null ? librarian.id : ''}">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="trackingNumber" class="form-label">Tracking Number</label>
+                                                    <input type="text" class="form-control" id="trackingNumber" name="trackingNumber">
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="estimatedDelivery" class="form-label">Estimated Delivery Date</label>
+                                                    <input type="date" class="form-control" id="estimatedDelivery" name="estimatedDelivery">
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="shippingNotes" class="form-label">Shipping Notes</label>
+                                                    <textarea class="form-control" id="shippingNotes" name="notes" rows="2"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-success" th:onclick="'document.getElementById(\'shippedForm-' + ${order.id} + '\').submit();'">Mark as Shipped</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Cancel Order Modal -->
+                            <div th:each="order : ${pendingOrders}" 
+                                 th:id="${'cancelOrderModal-' + order.id}" 
+                                 class="modal fade" 
+                                 tabindex="-1" 
+                                 aria-labelledby="cancelOrderModalLabel" 
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to cancel order #<span th:text="${order.id}">100</span> for <b th:text="${order.title}">Book Title</b>?</p>
+                                            <form th:action="@{/api/librarians/book-orders/{id}/status(id=${order.id})}" method="post" th:id="${'cancelForm-' + order.id}">
+                                                <input type="hidden" name="status" value="CANCELLED">
+                                                <input type="hidden" name="librarianId" th:value="${librarian != null ? librarian.id : ''}">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="cancelReason" class="form-label">Reason for Cancellation</label>
+                                                    <textarea class="form-control" id="cancelReason" name="notes" rows="3" required></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep Order</button>
+                                            <button type="button" class="btn btn-danger" th:onclick="'document.getElementById(\'cancelForm-' + ${order.id} + '\').submit();'">Yes, Cancel Order</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" th:unless="${pendingOrders != null && !pendingOrders.empty}">
+                            No pending book orders at this time.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipped Orders Tab -->
+            <div class="tab-pane fade" id="shipped" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${shippedOrders != null && !shippedOrders.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Book Title</th>
+                                            <th>Quantity</th>
+                                            <th>Shipped Date</th>
+                                            <th>Tracking</th>
+                                            <th>Estimated Delivery</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="order : ${shippedOrders}">
+                                            <td th:text="${order.id}">100</td>
+                                            <td th:text="${order.title}">Book Title</td>
+                                            <td th:text="${order.quantity}">5</td>
+                                            <td th:text="${#temporals.format(order.shippedDate, 'dd MMM yyyy')}">10 Jan 2023</td>
+                                            <td th:text="${order.trackingNumber ?: 'N/A'}">TRK123456789</td>
+                                            <td th:text="${order.estimatedDelivery != null ? #temporals.format(order.estimatedDelivery, 'dd MMM yyyy') : 'N/A'}">15 Jan 2023</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-primary" 
+                                                            data-bs-toggle="modal" 
+                                                            th:data-bs-target="${'#viewOrderModal-' + order.id}">
+                                                        View
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-success" 
+                                                            data-bs-toggle="modal" 
+                                                            th:data-bs-target="${'#markDeliveredModal-' + order.id}">
+                                                        Mark Delivered
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- View Order Modal -->
+                            <!-- (Similar to the one in Pending tab, can be reused) -->
+                            
+                            <!-- Mark Delivered Modal -->
+                            <div th:each="order : ${shippedOrders}" 
+                                 th:id="${'markDeliveredModal-' + order.id}" 
+                                 class="modal fade" 
+                                 tabindex="-1" 
+                                 aria-labelledby="markDeliveredModalLabel" 
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="markDeliveredModalLabel">Mark Order as Delivered</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you confirming that order #<span th:text="${order.id}">100</span> for <b th:text="${order.title}">Book Title</b> has been delivered?</p>
+                                            <form th:action="@{/api/librarians/book-orders/{id}/status(id=${order.id})}" method="post" th:id="${'deliveredForm-' + order.id}">
+                                                <input type="hidden" name="status" value="DELIVERED">
+                                                <input type="hidden" name="librarianId" th:value="${librarian != null ? librarian.id : ''}">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="deliveryCondition" class="form-label">Condition Upon Delivery</label>
+                                                    <select class="form-control" id="deliveryCondition" name="deliveryCondition" required>
+                                                        <option value="EXCELLENT">Excellent - No issues</option>
+                                                        <option value="GOOD">Good - Minor issues</option>
+                                                        <option value="DAMAGED">Damaged - Items need attention</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="deliveryNotes" class="form-label">Delivery Notes</label>
+                                                    <textarea class="form-control" id="deliveryNotes" name="notes" rows="3"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-success" th:onclick="'document.getElementById(\'deliveredForm-' + ${order.id} + '\').submit();'">Mark as Delivered</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" th:unless="${shippedOrders != null && !shippedOrders.empty}">
+                            No shipped book orders at this time.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Delivered Orders Tab -->
+            <div class="tab-pane fade" id="delivered" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${deliveredOrders != null && !deliveredOrders.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Book Title</th>
+                                            <th>Quantity</th>
+                                            <th>Total Price</th>
+                                            <th>Ordered Date</th>
+                                            <th>Delivered Date</th>
+                                            <th>Condition</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="order : ${deliveredOrders}">
+                                            <td th:text="${order.id}">100</td>
+                                            <td th:text="${order.title}">Book Title</td>
+                                            <td th:text="${order.quantity}">5</td>
+                                            <td th:text="${'$' + order.totalPrice}">$50.99</td>
+                                            <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                            <td th:text="${#temporals.format(order.deliveryDate, 'dd MMM yyyy')}">15 Jan 2023</td>
+                                            <td>
+                                                <span th:if="${order.deliveryCondition == 'EXCELLENT'}" class="badge bg-success">Excellent</span>
+                                                <span th:if="${order.deliveryCondition == 'GOOD'}" class="badge bg-warning">Good</span>
+                                                <span th:if="${order.deliveryCondition == 'DAMAGED'}" class="badge bg-danger">Damaged</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-primary" 
+                                                        data-bs-toggle="modal" 
+                                                        th:data-bs-target="${'#viewOrderModal-' + order.id}">
+                                                    View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" th:unless="${deliveredOrders != null && !deliveredOrders.empty}">
+                            No delivered book orders to display.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cancelled Orders Tab -->
+            <div class="tab-pane fade" id="cancelled" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${cancelledOrders != null && !cancelledOrders.empty}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Book Title</th>
+                                            <th>Quantity</th>
+                                            <th>Ordered Date</th>
+                                            <th>Cancelled Date</th>
+                                            <th>Reason</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="order : ${cancelledOrders}">
+                                            <td th:text="${order.id}">100</td>
+                                            <td th:text="${order.title}">Book Title</td>
+                                            <td th:text="${order.quantity}">5</td>
+                                            <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                            <td th:text="${#temporals.format(order.cancelDate, 'dd MMM yyyy')}">05 Jan 2023</td>
+                                            <td th:text="${order.notes ?: 'No reason provided'}">Cancelled reason</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-primary" 
+                                                        data-bs-toggle="modal" 
+                                                        th:data-bs-target="${'#viewOrderModal-' + order.id}">
+                                                    View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="alert alert-info" th:unless="${cancelledOrders != null && !cancelledOrders.empty}">
+                            No cancelled book orders to display.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

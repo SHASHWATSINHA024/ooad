@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Request a Book')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/books/view}">Books</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Request a Book</li>
+            </ol>
+        </nav>
+        
+        <h1>Request a Book</h1>
+        <p class="lead">Can't find the book you're looking for? Request it from our librarians.</p>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Book Request Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/books/request}" method="post">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Book Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Author (if known)</label>
+                                <input type="text" class="form-control" id="author" name="author">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="isbn" class="form-label">ISBN (if known)</label>
+                                <input type="text" class="form-control" id="isbn" name="isbn" 
+                                       placeholder="e.g., 978-3-16-148410-0">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">Select category (optional)</option>
+                                    <option value="FICTION">Fiction</option>
+                                    <option value="NON_FICTION">Non-Fiction</option>
+                                    <option value="SCIENCE">Science</option>
+                                    <option value="TECHNOLOGY">Technology</option>
+                                    <option value="HISTORY">History</option>
+                                    <option value="BIOGRAPHY">Biography</option>
+                                    <option value="SELF_HELP">Self-Help</option>
+                                    <option value="BUSINESS">Business</option>
+                                    <option value="COOKING">Cooking</option>
+                                    <option value="TRAVEL">Travel</option>
+                                    <option value="CHILDREN">Children</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="reason" class="form-label">Why are you requesting this book?</label>
+                                <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                          placeholder="Tell us why you'd like this book added to our collection"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="urgency" class="form-label">Urgency</label>
+                                <select class="form-select" id="urgency" name="urgency">
+                                    <option value="LOW">Not urgent - anytime is fine</option>
+                                    <option value="MEDIUM">Medium - would like it within a month</option>
+                                    <option value="HIGH">High - need it within two weeks</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Request Guidelines</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Provide as much information as possible about the book.</li>
+                            <li class="list-group-item">Our librarians will review your request and get back to you.</li>
+                            <li class="list-group-item">If approved, you'll be notified when the book is available.</li>
+                            <li class="list-group-item">You may check the status of your request in your dashboard.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">My Requests</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>You can view the status of your existing book requests in your dashboard.</p>
+                        <a th:href="@{/users/requests}" class="btn btn-outline-secondary">View My Requests</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

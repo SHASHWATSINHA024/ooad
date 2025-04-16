@@ -1,1 +1,252 @@
- 
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Librarian Dashboard')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <h1>Librarian Dashboard</h1>
+        <p class="lead">Welcome, <span th:text="${librarian != null ? librarian.name : 'Librarian'}">Librarian</span>!</p>
+        
+        <!-- Overview Statistics Cards -->
+        <div class="row mb-4">
+            <!-- Members Card -->
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-primary h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Total Members</h6>
+                                <h2 class="mb-0" th:text="${memberCount != null ? memberCount : 0}">0</h2>
+                            </div>
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a th:href="@{/api/librarians/members}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Defaulted Members Card -->
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-danger h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Defaulted Members</h6>
+                                <h2 class="mb-0" th:text="${defaultedMemberCount != null ? defaultedMemberCount : 0}">0</h2>
+                            </div>
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a th:href="@{/librarian/defaulted}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Books in Stock Card -->
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-success h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Books in Stock</h6>
+                                <h2 class="mb-0" th:text="${bookCount != null ? bookCount : 0}">0</h2>
+                            </div>
+                            <i class="fas fa-book fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a th:href="@{/librarian/books}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly Earnings Card -->
+            <div class="col-md-3 mb-3">
+                <div class="card text-white bg-info h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Monthly Earnings</h6>
+                                <h2 class="mb-0">$<span th:text="${monthlyEarnings != null ? #numbers.formatDecimal(monthlyEarnings, 1, 2) : '0.00'}">0.00</span></h2>
+                            </div>
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a th:href="@{/librarian/earnings}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Left Navigation Column -->
+            <div class="col-md-3">
+                <div class="list-group mb-4">
+                    <div class="list-group-item bg-light text-dark font-weight-bold">
+                        Member Management
+                    </div>
+                    <a th:href="@{/librarian/members}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> All Members
+                    </a>
+                    <a th:href="@{/librarian/defaulted}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Defaulted Members
+                    </a>
+                    <a th:href="@{/librarian/membership-requests}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user-plus me-2"></i> Membership Requests <span class="badge bg-danger rounded-pill" th:if="${pendingMembershipRequestCount > 0}" th:text="${pendingMembershipRequestCount}">0</span>
+                    </a>
+                </div>
+                
+                <div class="list-group mb-4">
+                    <div class="list-group-item bg-light text-dark font-weight-bold">
+                        Book Management
+                    </div>
+                    <a th:href="@{/librarian/books}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-book me-2"></i> Book Inventory
+                    </a>
+                    <a th:href="@{/librarian/book-orders}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shipping-fast me-2"></i> Order Books
+                    </a>
+                    <a th:href="@{/librarian/book-deliveries}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-truck me-2"></i> Book Deliveries
+                    </a>
+                    <a th:href="@{/librarian/book-requests}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-clipboard-list me-2"></i> Book Requests <span class="badge bg-danger rounded-pill" th:if="${pendingBookRequestCount > 0}" th:text="${pendingBookRequestCount}">0</span>
+                    </a>
+                    <a th:href="@{/librarian/sell-requests}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-exchange-alt me-2"></i> Sell Requests <span class="badge bg-danger rounded-pill" th:if="${pendingSellRequestCount > 0}" th:text="${pendingSellRequestCount}">0</span>
+                    </a>
+                </div>
+                
+                <div class="list-group mb-4">
+                    <div class="list-group-item bg-light text-dark font-weight-bold">
+                        Reports & Feedback
+                    </div>
+                    <a th:href="@{/librarian/reviews}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-star me-2"></i> Book Reviews
+                    </a>
+                    <a th:href="@{/librarian/earnings}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-line me-2"></i> Earnings Report
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Main Content Column -->
+            <div class="col-md-9">
+                <!-- Recent Activity -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Recent Activities</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" th:if="${recentActivities != null && !recentActivities.empty}">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Activity</th>
+                                        <th>User</th>
+                                        <th>Item</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="activity : ${recentActivities}">
+                                        <td th:text="${activity.type}">BORROW</td>
+                                        <td>
+                                            <a th:href="@{/librarian/members/{id}(id=${activity.userId})}" th:text="${activity.userName}">John Doe</a>
+                                        </td>
+                                        <td>
+                                            <a th:if="${activity.bookId != null}" th:href="@{/books/view/{id}(id=${activity.bookId})}" th:text="${activity.itemName}">Book Title</a>
+                                            <span th:unless="${activity.bookId != null}" th:text="${activity.itemName}">Item Name</span>
+                                        </td>
+                                        <td th:text="${#temporals.format(activity.timestamp, 'dd MMM yyyy HH:mm')}">01 Jan 2023 12:00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-info" th:unless="${recentActivities != null && !recentActivities.empty}">
+                            No recent activities to display.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Books Running Low on Stock -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Books Low in Stock</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" th:if="${lowStockBooks != null && !lowStockBooks.empty}">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Author</th>
+                                        <th>Current Stock</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="book : ${lowStockBooks}">
+                                        <td>
+                                            <a th:href="@{/books/view/{id}(id=${book.id})}" th:text="${book.title}">Book Title</a>
+                                        </td>
+                                        <td th:text="${book.author}">Author Name</td>
+                                        <td>
+                                            <span class="badge bg-danger" th:if="${book.stock == 0}">Out of Stock</span>
+                                            <span class="badge bg-warning" th:if="${book.stock > 0 && book.stock < 5}" th:text="${book.stock}">3</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/librarian/book-orders/new(bookId=${book.id})}" class="btn btn-sm btn-outline-primary">Order More</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-success" th:unless="${lowStockBooks != null && !lowStockBooks.empty}">
+                            All books are well stocked.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Requests Summary -->
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Pending Requests</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Membership Requests</h5>
+                                        <p class="card-text" th:text="${pendingMembershipRequestCount} + ' pending requests'">0 pending requests</p>
+                                        <a th:href="@{/librarian/membership-requests}" class="btn btn-primary">Review Requests</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Book Sell Requests</h5>
+                                        <p class="card-text" th:text="${pendingSellRequestCount} + ' pending requests'">0 pending requests</p>
+                                        <a th:href="@{/librarian/sell-requests}" class="btn btn-primary">Review Requests</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

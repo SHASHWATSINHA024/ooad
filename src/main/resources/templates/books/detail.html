@@ -27,6 +27,11 @@
                             <input type="hidden" name="bookId" th:value="${book.id}">
                             <button type="submit" class="btn btn-outline-primary d-block w-100">Add to Wishlist</button>
                         </form>
+                        
+                        <!-- Add Request Book button -->
+                        <a th:href="@{/books/request}" class="btn btn-outline-secondary d-block w-100 mt-2">
+                            Request Similar Book
+                        </a>
                     </div>
                     
                     <div class="mt-3">

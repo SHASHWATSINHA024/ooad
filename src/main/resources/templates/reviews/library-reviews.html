@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Library Reviews')"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <h1>Library Reviews</h1>
+        <p class="lead">See what others think about our library services or share your experience.</p>
+        
+        <!-- Library Review Form for logged-in users -->
+        <div class="card mb-4" sec:authorize="isAuthenticated()">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Share Your Experience</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/reviews/add}" method="post">
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <select class="form-select" id="rating" name="rating" required>
+                            <option value="">Select rating</option>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Review Title</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               placeholder="Brief summary of your experience" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Your Review</label>
+                        <textarea class="form-control" id="content" name="content" rows="4" required
+                                  placeholder="Tell us about your experience with our library services..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Message for non-logged in users -->
+        <div class="alert alert-info mb-4" sec:authorize="!isAuthenticated()">
+            <p class="mb-0">
+                Please <a th:href="@{/auth/login}" class="alert-link">log in</a> to submit your own review of the library.
+            </p>
+        </div>
+        
+        <!-- Display existing reviews -->
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Recent Reviews</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${reviews != null && !reviews.empty}" class="reviews-container">
+                    <div class="review-item mb-4 pb-3 border-bottom" th:each="review : ${reviews}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 th:text="${review.title}">Review Title</h5>
+                                <div class="mb-2">
+                                    <span class="text-warning" th:each="i : ${#numbers.sequence(1, review.rating)}">
+                                        <i class="fas fa-star"></i>
+                                    </span>
+                                    <span class="text-muted" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}">
+                                        <i class="far fa-star"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'dd MMM yyyy')}">01 Jan 2023</small>
+                        </div>
+                        <p class="review-text" th:text="${review.content}">Review content goes here...</p>
+                        <div class="review-footer text-muted">
+                            <small>
+                                - <span th:text="${review.userName}">User Name</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-light text-center" th:unless="${reviews != null && !reviews.empty}">
+                    <p class="mb-0">No library reviews yet. Be the first to share your experience!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 
