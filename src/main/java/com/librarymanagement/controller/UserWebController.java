@@ -421,7 +421,7 @@ public class UserWebController {
     }
     
     @PostMapping("/{userId}/sell-book")
-    public String sellBook(
+    public String donateBook(
             @PathVariable Long userId,
             @RequestParam String title,
             @RequestParam String author,
@@ -436,13 +436,13 @@ public class UserWebController {
             // Get current user from session
             UserDTO sessionUser = (UserDTO) session.getAttribute("currentUser");
             
-            // Security check - only sell books from own account
+            // Security check - only donate books from own account
             if (sessionUser == null || !sessionUser.getId().equals(userId)) {
                 redirectAttributes.addFlashAttribute("error", "Unauthorized access");
                 return "redirect:/auth/login";
             }
             
-            // Create book for sale
+            // Create book for donation
             BookDTO bookDTO = new BookDTO();
             bookDTO.setTitle(title);
             bookDTO.setAuthor(author);
@@ -458,25 +458,25 @@ public class UserWebController {
             // Setting category as condition since BookDTO doesn't have condition field
             bookDTO.setCategory(condition);
             
-            // Convert double to BigDecimal
-            bookDTO.setPrice(new BigDecimal(askingPrice));
+            // Set price to 0 for donations
+            bookDTO.setPrice(new BigDecimal(0));
             
             // Set default stock
             bookDTO.setStock(1);
             
-            // Save the book for sale request
+            // Save the book donation
             String result = bookService.addBook(bookDTO);
             
             if (result != null && result.contains("success")) {
-                // Add coins as reward for selling a book
-                userService.addCoins(userId, 2); 
-                redirectAttributes.addFlashAttribute("message", "Book sell request submitted successfully. You earned 2 coins! Our staff will review it.");
+                // Add coins as reward for donating a book
+                userService.addCoins(userId, 5); // More coins for donations
+                redirectAttributes.addFlashAttribute("message", "Thank you for your book donation! You earned 5 coins as a thank you gift.");
             } else {
-                redirectAttributes.addFlashAttribute("error", result != null ? result : "Failed to submit book sell request");
+                redirectAttributes.addFlashAttribute("error", result != null ? result : "Failed to submit book donation");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Error submitting book sell request: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error submitting book donation: " + e.getMessage());
         }
         
         return "redirect:/users/dashboard";
