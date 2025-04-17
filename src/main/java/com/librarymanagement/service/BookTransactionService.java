@@ -60,6 +60,20 @@ public class BookTransactionService {
             
             // Reduce book stock
             book.setStock(book.getStock() - 1);
+            // Also reduce available copies
+            book.setAvailableCopies(book.getAvailableCopies() - 1);
+        }
+        
+        // For purchase transactions, also update stock and available copies
+        if (TransactionType.valueOf(transactionDTO.getType()) == TransactionType.PURCHASE) {
+            if (book.getStock() <= 0) {
+                // Book is out of stock
+                return null;
+            }
+            
+            // Reduce book stock and available copies for purchases
+            book.setStock(book.getStock() - 1);
+            book.setAvailableCopies(book.getAvailableCopies() - 1);
         }
         
         BookTransaction transaction = new BookTransaction();
@@ -303,6 +317,8 @@ public class BookTransactionService {
         // Increase book stock when returning
         Book book = transaction.getBook();
         book.setStock(book.getStock() + 1);
+        // Also increase available copies
+        book.setAvailableCopies(book.getAvailableCopies() + 1);
         bookRepository.save(book);
         
         // Save the transaction

@@ -31,6 +31,9 @@ public class Book {
     
     private int stock = 0;
     
+    // Add available_copies field that exists in the database
+    private int availableCopies = 0;
+    
     private int coinPrice = 0;
     
     private int borrowCount = 0;
@@ -112,6 +115,14 @@ public class Book {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+    
+    public int getAvailableCopies() {
+        return availableCopies;
+    }
+
+    public void setAvailableCopies(int availableCopies) {
+        this.availableCopies = availableCopies;
     }
 
     public int getCoinPrice() {

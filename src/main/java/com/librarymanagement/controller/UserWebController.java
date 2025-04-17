@@ -94,6 +94,9 @@ public class UserWebController {
         // Add user's coins
         model.addAttribute("userCoins", userService.getUserCoins(user.getId()));
         
+        // Add empty sell requests list to avoid null pointer exception
+        model.addAttribute("sellRequests", new ArrayList<>());
+        
         return "users/dashboard";
     }
     
@@ -443,27 +446,36 @@ public class UserWebController {
             BookDTO bookDTO = new BookDTO();
             bookDTO.setTitle(title);
             bookDTO.setAuthor(author);
-            bookDTO.setIsbn(isbn);
-            bookDTO.setDescription(description);
-            // Note: condition and status attributes don't exist in BookDTO
-            // Setting category instead of condition
+            
+            if (isbn != null && !isbn.trim().isEmpty()) {
+                bookDTO.setIsbn(isbn);
+            }
+            
+            if (description != null && !description.trim().isEmpty()) {
+                bookDTO.setDescription(description);
+            }
+            
+            // Setting category as condition since BookDTO doesn't have condition field
             bookDTO.setCategory(condition);
+            
             // Convert double to BigDecimal
             bookDTO.setPrice(new BigDecimal(askingPrice));
-            // Cannot directly set status and sellerId as those methods don't exist
+            
+            // Set default stock
+            bookDTO.setStock(1);
             
             // Save the book for sale request
             String result = bookService.addBook(bookDTO);
             
-            if (result != null) {
-                // Update both messages to just one
+            if (result != null && result.contains("success")) {
                 // Add coins as reward for selling a book
                 userService.addCoins(userId, 2); 
                 redirectAttributes.addFlashAttribute("message", "Book sell request submitted successfully. You earned 2 coins! Our staff will review it.");
             } else {
-                redirectAttributes.addFlashAttribute("error", "Failed to submit book sell request");
+                redirectAttributes.addFlashAttribute("error", result != null ? result : "Failed to submit book sell request");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Error submitting book sell request: " + e.getMessage());
         }
         

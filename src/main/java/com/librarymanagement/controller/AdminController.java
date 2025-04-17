@@ -96,6 +96,61 @@ public class AdminController {
         return "admin/users";
     }
     
+    @GetMapping("/librarians/add")
+    public String addLibrarianForm(Model model) {
+        model.addAttribute("librarian", new UserDTO());
+        return "admin/librarian-form";
+    }
+    
+    @PostMapping("/librarians/add")
+    public String addLibrarian(UserDTO librarian, RedirectAttributes redirectAttributes) {
+        try {
+            // Set role to LIBRARIAN
+            librarian.setRole("LIBRARIAN");
+            librarian.setStatus("ACTIVE");
+            
+            // Register the librarian
+            UserDTO result = userService.registerUser(librarian);
+            if (result != null) {
+                redirectAttributes.addFlashAttribute("message", "Librarian added successfully");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Failed to add librarian");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error adding librarian: " + e.getMessage());
+        }
+        return "redirect:/admin/dashboard";
+    }
+    
+    @GetMapping("/librarians/{id}/edit")
+    public String editLibrarianForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        UserDTO librarian = userService.getUserById(id);
+        if (librarian == null) {
+            redirectAttributes.addFlashAttribute("error", "Librarian not found");
+            return "redirect:/admin/dashboard";
+        }
+        model.addAttribute("librarian", librarian);
+        return "admin/librarian-form";
+    }
+    
+    @PostMapping("/librarians/{id}/edit")
+    public String updateLibrarian(@PathVariable Long id, UserDTO librarian, RedirectAttributes redirectAttributes) {
+        try {
+            // Maintain role as LIBRARIAN
+            librarian.setRole("LIBRARIAN");
+            
+            UserDTO result = userService.updateUser(id, librarian);
+            if (result != null) {
+                redirectAttributes.addFlashAttribute("message", "Librarian updated successfully");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Failed to update librarian");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error updating librarian: " + e.getMessage());
+        }
+        return "redirect:/admin/dashboard";
+    }
+    
     @GetMapping("/books")
     public String books(Model model) {
         // Add book management data

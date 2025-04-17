@@ -64,6 +64,9 @@ public class BookService {
             // Set default stock if not provided
             book.setStock(bookDTO.getStock() > 0 ? bookDTO.getStock() : 1);
             
+            // Set available_copies equal to stock
+            book.setAvailableCopies(book.getStock());
+            
             // Set default coin price if not provided
             book.setCoinPrice(bookDTO.getCoinPrice() > 0 ? bookDTO.getCoinPrice() : 0);
             
@@ -160,6 +163,11 @@ public class BookService {
         }
         if (bookDTO.getStock() > 0) {
             book.setStock(bookDTO.getStock());
+            // Update availableCopies when stock is updated
+            book.setAvailableCopies(bookDTO.getStock());
+        }
+        if (bookDTO.getAvailableCopies() > 0) {
+            book.setAvailableCopies(bookDTO.getAvailableCopies());
         }
         if (bookDTO.getCoinPrice() >= 0) {
             book.setCoinPrice(bookDTO.getCoinPrice());
@@ -197,6 +205,7 @@ public class BookService {
             book.getCategory(), 
             book.getPrice(),
             book.getStock(),
+            book.getAvailableCopies(),
             book.getCoinPrice(),
             book.getBorrowCount(),
             book.getPublishDate(),

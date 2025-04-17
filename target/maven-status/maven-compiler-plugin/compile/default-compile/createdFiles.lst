@@ -15,6 +15,7 @@ com\librarymanagement\controller\UserWebController.class
 com\librarymanagement\service\TransactionService.class
 com\librarymanagement\service\BookTransactionService.class
 com\librarymanagement\service\WishlistService.class
+com\librarymanagement\controller\LibrarianWebController.class
 com\librarymanagement\repository\TransactionRepository.class
 com\librarymanagement\dto\BookReviewDTO.class
 com\librarymanagement\repository\BookSellRequestRepository.class

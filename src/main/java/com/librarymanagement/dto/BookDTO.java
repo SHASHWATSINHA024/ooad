@@ -12,6 +12,7 @@ public class BookDTO {
     private String category;
     private BigDecimal price;
     private int stock;
+    private int availableCopies;
     private int coinPrice;
     private int borrowCount;
     private LocalDateTime publishDate;
@@ -30,7 +31,7 @@ public class BookDTO {
     
     // Constructor with all fields
     public BookDTO(Long id, String title, String author, String isbn, String description, 
-                String category, BigDecimal price, int stock, int coinPrice, 
+                String category, BigDecimal price, int stock, int availableCopies, int coinPrice, 
                 int borrowCount, LocalDateTime publishDate, Double averageRating) {
         this.id = id;
         this.title = title;
@@ -40,6 +41,7 @@ public class BookDTO {
         this.category = category;
         this.price = price;
         this.stock = stock;
+        this.availableCopies = availableCopies;
         this.coinPrice = coinPrice;
         this.borrowCount = borrowCount;
         this.publishDate = publishDate;
@@ -109,6 +111,14 @@ public class BookDTO {
     
     public void setStock(int stock) {
         this.stock = stock;
+    }
+    
+    public int getAvailableCopies() {
+        return availableCopies;
+    }
+    
+    public void setAvailableCopies(int availableCopies) {
+        this.availableCopies = availableCopies;
     }
     
     public int getCoinPrice() {
