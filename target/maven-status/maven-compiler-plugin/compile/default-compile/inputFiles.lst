@@ -1,3 +1,4 @@
+C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\LibraryReviewRepository.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\service\MembershipService.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\MembershipDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\BookReviewRepository.java
@@ -11,6 +12,7 @@ C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\d
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\controller\AdminController.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\UserDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\WishlistItemRepository.java
+C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\service\LibraryReviewService.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\ReviewDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\service\UserService.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\LibraryManagementApplication.java
@@ -31,6 +33,8 @@ C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\e
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\BookOrderDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\BookReviewDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\BookRepository.java
+C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\entity\LibraryReview.java
+C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\dto\LibraryReviewDTO.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\ReviewRepository.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\service\BookService.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\controller\LibrarianController.java
@@ -70,4 +74,5 @@ C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\r
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\config\DataInitializer.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\BookTransactionRepository.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\entity\Membership.java
+C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\controller\LibraryReviewController.java
 C:\Users\shash\Documents\LibraryManagement\src\main\java\com\librarymanagement\repository\LibrarianRepository.java

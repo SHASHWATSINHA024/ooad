@@ -42,8 +42,10 @@ public class UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setAddress(userDTO.getAddress());
         user.setCoins(0);
+        // Always set a default status if none provided
         user.setStatus(UserStatus.PENDING);
         user.setRole(userDTO.getRole() != null ? userDTO.getRole() : "USER");
+        user.setMembershipType(userDTO.getMembershipType());
         
         User savedUser = userRepository.save(user);
         
@@ -58,6 +60,7 @@ public class UserService {
         savedUserDTO.setCoins(savedUser.getCoins());
         savedUserDTO.setStatus(savedUser.getStatus().toString());
         savedUserDTO.setRole(savedUser.getRole());
+        savedUserDTO.setMembershipType(savedUser.getMembershipType());
         
         return savedUserDTO;
     }
@@ -79,8 +82,9 @@ public class UserService {
                 userDTO.setPhoneNumber(user.getPhoneNumber());
                 userDTO.setAddress(user.getAddress());
                 userDTO.setCoins(user.getCoins());
-                userDTO.setStatus(user.getStatus().toString());
+                userDTO.setStatus(user.getStatus() != null ? user.getStatus().toString() : "PENDING");
                 userDTO.setRole(user.getRole());
+                userDTO.setMembershipType(user.getMembershipType());
                 
                 return userDTO;
             }
@@ -104,8 +108,9 @@ public class UserService {
             userDTO.setPhoneNumber(user.getPhoneNumber());
             userDTO.setAddress(user.getAddress());
             userDTO.setCoins(user.getCoins());
-            userDTO.setStatus(user.getStatus().toString());
+            userDTO.setStatus(user.getStatus() != null ? user.getStatus().toString() : "PENDING");
             userDTO.setRole(user.getRole());
+            userDTO.setMembershipType(user.getMembershipType());
             
             return userDTO;
         }
@@ -127,8 +132,9 @@ public class UserService {
             userDTO.setPhoneNumber(user.getPhoneNumber());
             userDTO.setAddress(user.getAddress());
             userDTO.setCoins(user.getCoins());
-            userDTO.setStatus(user.getStatus().toString());
+            userDTO.setStatus(user.getStatus() != null ? user.getStatus().toString() : "PENDING");
             userDTO.setRole(user.getRole());
+            userDTO.setMembershipType(user.getMembershipType());
             
             return userDTO;
         }
@@ -156,8 +162,15 @@ public class UserService {
                 user.setEmail(userDTO.getEmail());
             }
             
+            // Debug logs for phoneNumber
+            System.out.println("Original phone number: [" + user.getPhoneNumber() + "]");
+            System.out.println("New phone number from DTO: [" + userDTO.getPhoneNumber() + "]");
+            
+            // Handle phoneNumber - can be null or empty string
+            // Empty string is a valid value (user deleted their phone number)
             if (userDTO.getPhoneNumber() != null) {
                 user.setPhoneNumber(userDTO.getPhoneNumber());
+                System.out.println("Phone number updated to: [" + user.getPhoneNumber() + "]");
             }
             
             if (userDTO.getAddress() != null) {
@@ -191,8 +204,9 @@ public class UserService {
             updatedUserDTO.setPhoneNumber(updatedUser.getPhoneNumber());
             updatedUserDTO.setAddress(updatedUser.getAddress());
             updatedUserDTO.setCoins(updatedUser.getCoins());
-            updatedUserDTO.setStatus(updatedUser.getStatus().toString());
+            updatedUserDTO.setStatus(updatedUser.getStatus() != null ? updatedUser.getStatus().toString() : "PENDING");
             updatedUserDTO.setRole(updatedUser.getRole());
+            updatedUserDTO.setMembershipType(updatedUser.getMembershipType());
             
             return updatedUserDTO;
         }
@@ -256,6 +270,11 @@ public class UserService {
         List<UserDTO> userDTOs = new ArrayList<>();
         
         for (User user : users) {
+            // Skip users with null status and only include active users
+            if (user.getStatus() == null) {
+                continue;
+            }
+            
             if (user.getStatus() == UserStatus.ACTIVE) {
                 UserDTO dto = new UserDTO();
                 dto.setId(user.getId());
@@ -267,10 +286,57 @@ public class UserService {
                 dto.setCoins(user.getCoins());
                 dto.setStatus(user.getStatus().toString());
                 dto.setRole(user.getRole());
+                dto.setMembershipType(user.getMembershipType());
                 userDTOs.add(dto);
             }
         }
         
         return userDTOs;
+    }
+
+    /**
+     * Get all users regardless of status
+     */
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserDTO> userDTOs = new ArrayList<>();
+        
+        for (User user : users) {
+            UserDTO dto = new UserDTO();
+            dto.setId(user.getId());
+            dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
+            dto.setFullName(user.getFullName());
+            dto.setPhoneNumber(user.getPhoneNumber());
+            dto.setAddress(user.getAddress());
+            dto.setCoins(user.getCoins());
+            dto.setStatus(user.getStatus() != null ? user.getStatus().toString() : "PENDING");
+            dto.setRole(user.getRole());
+            dto.setMembershipType(user.getMembershipType());
+            userDTOs.add(dto);
+        }
+        
+        return userDTOs;
+    }
+
+    /**
+     * Fix corrupt user records by updating null status to PENDING
+     * This method can be called during application startup or as needed
+     */
+    public void fixCorruptUserRecords() {
+        List<User> users = userRepository.findAll();
+        boolean changesNeeded = false;
+        
+        for (User user : users) {
+            if (user.getStatus() == null) {
+                user.setStatus(UserStatus.PENDING);
+                changesNeeded = true;
+            }
+        }
+        
+        if (changesNeeded) {
+            userRepository.saveAll(users);
+            System.out.println("Fixed corrupt user records with null status");
+        }
     }
 }

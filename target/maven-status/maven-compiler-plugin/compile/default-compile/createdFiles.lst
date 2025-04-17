@@ -1,4 +1,5 @@
 com\librarymanagement\controller\AdminController.class
+com\librarymanagement\controller\LibraryReviewController.class
 com\librarymanagement\entity\BookTransaction.class
 com\librarymanagement\service\BookReviewService.class
 com\librarymanagement\repository\BookReviewRepository.class
@@ -40,6 +41,7 @@ com\librarymanagement\entity\MembershipRequest.class
 com\librarymanagement\service\BookService.class
 com\librarymanagement\controller\CustomErrorController.class
 com\librarymanagement\controller\DeliveryController.class
+com\librarymanagement\service\LibraryReviewService.class
 com\librarymanagement\config\DataInitializer.class
 com\librarymanagement\service\DeliveryService.class
 com\librarymanagement\dto\MembershipRequestDTO.class
@@ -51,6 +53,7 @@ com\librarymanagement\controller\HomeController.class
 com\librarymanagement\service\ReviewService.class
 com\librarymanagement\entity\WishlistItem.class
 com\librarymanagement\dto\LoginDTO.class
+com\librarymanagement\repository\LibraryReviewRepository.class
 com\librarymanagement\repository\ReviewRepository.class
 com\librarymanagement\entity\BookSellRequest.class
 com\librarymanagement\entity\Librarian.class
@@ -63,6 +66,8 @@ com\librarymanagement\service\BookOrderService.class
 com\librarymanagement\exception\InvalidOperationException.class
 com\librarymanagement\exception\ResourceNotFoundException.class
 com\librarymanagement\entity\BookOrder$OrderStatus.class
+com\librarymanagement\dto\LibraryReviewDTO.class
+com\librarymanagement\entity\LibraryReview.class
 com\librarymanagement\repository\MembershipRepository.class
 com\librarymanagement\dto\ReviewDTO.class
 com\librarymanagement\controller\ReviewController.class

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Library Membership</h1>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Membership Benefits</h2>
+                        <p class="card-text">Join our library and enjoy the following benefits:</p>
+                        <ul>
+                            <li>Borrow up to 5 books at a time</li>
+                            <li>14-day lending period for all books</li>
+                            <li>Access to exclusive digital resources</li>
+                            <li>Invitation to members-only events</li>
+                            <li>Monthly newsletter with book recommendations</li>
+                            <li>Earn coins for each book returned on time</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-5 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="card-title mb-0">Monthly Membership</h3>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title">$8/month</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Borrow up to 5 books</li>
+                                    <li><i class="fas fa-check text-success"></i> 14-day lending period</li>
+                                    <li><i class="fas fa-check text-success"></i> Access to full catalog</li>
+                                    <li><i class="fas fa-check text-success"></i> Digital resources</li>
+                                    <li><i class="fas fa-check text-success"></i> Monthly billing</li>
+                                    <li><i class="fas fa-check text-success"></i> Cancel anytime</li>
+                                </ul>
+                                <a href="/auth/register?membershipType=MONTHLY" class="btn btn-primary mt-3 w-100">Sign Up</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-5 mb-4">
+                        <div class="card h-100 border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="card-title mb-0">Annual Membership</h3>
+                                <div class="badge bg-warning text-dark">20% Savings</div>
+                            </div>
+                            <div class="card-body">
+                                <h4 class="card-title">$75/year</h4>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Borrow up to 5 books</li>
+                                    <li><i class="fas fa-check text-success"></i> 14-day lending period</li>
+                                    <li><i class="fas fa-check text-success"></i> Access to full catalog</li>
+                                    <li><i class="fas fa-check text-success"></i> Digital resources</li>
+                                    <li><i class="fas fa-check text-success"></i> Annual billing (save 20%)</li>
+                                    <li><i class="fas fa-check text-success"></i> Priority reservation</li>
+                                </ul>
+                                <a href="/auth/register?membershipType=ANNUAL" class="btn btn-primary mt-3 w-100">Sign Up</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">How to Join</h2>
+                        <p class="card-text">Follow these simple steps to become a member of our library:</p>
+                        <ol>
+                            <li>Create an account on our website and select your membership type</li>
+                            <li>Submit your membership request</li>
+                            <li>A librarian will review and approve your membership</li>
+                            <li>Visit the library with a valid ID proof to collect your membership card</li>
+                            <li>Pay the membership fee</li>
+                            <li>Start borrowing books!</li>
+                        </ol>
+                        <a href="/auth/register" class="btn btn-success">Register Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

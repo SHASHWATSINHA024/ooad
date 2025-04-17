@@ -10,6 +10,7 @@ import com.librarymanagement.entity.User;
 import com.librarymanagement.entity.User.UserStatus;
 import com.librarymanagement.repository.LibrarianRepository;
 import com.librarymanagement.repository.UserRepository;
+import com.librarymanagement.service.UserService;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -22,9 +23,15 @@ public class DataInitializer implements CommandLineRunner {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private UserService userService;
 
     @Override
     public void run(String... args) throws Exception {
+        // Fix any corrupt user records with null status
+        userService.fixCorruptUserRecords();
+        
         // Create admin user if it doesn't exist
         if (!userRepository.existsByUsername("admin")) {
             User adminUser = new User();

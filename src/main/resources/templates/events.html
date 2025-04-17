@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})"></head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-4">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Library Events</h1>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Join our events to meet fellow book lovers, participate in discussions, and enhance your reading experience!
+                </div>
+                
+                <!-- Upcoming Events Section -->
+                <section class="mb-5">
+                    <h2 class="mb-4">Upcoming Events</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Book Club Discussion: "The Midnight Library"</h5>
+                                    <span class="badge bg-light text-dark">July 15, 2023</span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Join us for an engaging discussion about Matt Haig's "The Midnight Library." We'll explore themes of regret, possibility, and the choices that make up a life.</p>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <li class="list-group-item"><i class="far fa-clock"></i> 6:00 PM - 8:00 PM</li>
+                                        <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Main Reading Room</li>
+                                        <li class="list-group-item"><i class="fas fa-user"></i> Hosted by: Sarah Johnson</li>
+                                    </ul>
+                                    <button class="btn btn-outline-primary">Register</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Author Meet: J.K. Rowling</h5>
+                                    <span class="badge bg-light text-dark">July 22, 2023</span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">An exclusive opportunity to meet J.K. Rowling, author of the Harry Potter series. Get your books signed and participate in a Q&A session.</p>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <li class="list-group-item"><i class="far fa-clock"></i> 3:00 PM - 5:00 PM</li>
+                                        <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Auditorium</li>
+                                        <li class="list-group-item"><i class="fas fa-user"></i> Special Guest: J.K. Rowling</li>
+                                    </ul>
+                                    <button class="btn btn-outline-success">Register (Premium Members Only)</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Children's Reading Hour</h5>
+                                    <span class="badge bg-light text-dark">Weekly: Every Saturday</span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Bring your kids to our weekly reading hour. We'll read engaging stories, perform interactive activities, and inspire a love for reading.</p>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <li class="list-group-item"><i class="far fa-clock"></i> 10:00 AM - 11:30 AM</li>
+                                        <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Children's Section</li>
+                                        <li class="list-group-item"><i class="fas fa-user"></i> Hosted by: Children's Librarian</li>
+                                    </ul>
+                                    <button class="btn btn-outline-info">Register</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Workshop: Creative Writing</h5>
+                                    <span class="badge bg-light text-dark">July 29, 2023</span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">Develop your writing skills with our creative writing workshop. Learn techniques, get feedback, and share your work with fellow writers.</p>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <li class="list-group-item"><i class="far fa-clock"></i> 2:00 PM - 5:00 PM</li>
+                                        <li class="list-group-item"><i class="fas fa-map-marker-alt"></i> Study Room 2</li>
+                                        <li class="list-group-item"><i class="fas fa-user"></i> Instructor: Michael Wright</li>
+                                    </ul>
+                                    <button class="btn btn-outline-warning">Register</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Past Events Section -->
+                <section>
+                    <h2 class="mb-4">Past Events</h2>
+                    
+                    <div class="list-group">
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Book Launch: "The Silent Patient"</h5>
+                                <small>June 10, 2023</small>
+                            </div>
+                            <p class="mb-1">Book launch event with Alex Michaelides, author of the psychological thriller "The Silent Patient".</p>
+                            <small><i class="fas fa-users"></i> 120 Attendees</small>
+                        </div>
+                        
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Poetry Reading Night</h5>
+                                <small>May 25, 2023</small>
+                            </div>
+                            <p class="mb-1">An evening of poetry readings featuring works from classic and contemporary poets, as well as original works from local talents.</p>
+                            <small><i class="fas fa-users"></i> 85 Attendees</small>
+                        </div>
+                        
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Summer Reading Program Kickoff</h5>
+                                <small>June 1, 2023</small>
+                            </div>
+                            <p class="mb-1">Launch event for our annual summer reading program with games, activities, and prizes for all ages.</p>
+                            <small><i class="fas fa-users"></i> 200+ Attendees</small>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

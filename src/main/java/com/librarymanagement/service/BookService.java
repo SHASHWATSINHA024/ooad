@@ -24,19 +24,58 @@ public class BookService {
     private BookReviewRepository bookReviewRepository;
 
     public String addBook(BookDTO bookDTO) {
-        Book book = new Book();
-        book.setTitle(bookDTO.getTitle());
-        book.setAuthor(bookDTO.getAuthor());
-        book.setCategory(bookDTO.getCategory());
-        book.setPrice(bookDTO.getPrice());
-        book.setIsbn(bookDTO.getIsbn());
-        book.setDescription(bookDTO.getDescription());
-        book.setStock(bookDTO.getStock());
-        book.setCoinPrice(bookDTO.getCoinPrice());
-        book.setPublishDate(bookDTO.getPublishDate());
+        try {
+            // Input validation
+            if (bookDTO.getTitle() == null || bookDTO.getTitle().trim().isEmpty()) {
+                return "Book title is required";
+            }
+            
+            if (bookDTO.getAuthor() == null || bookDTO.getAuthor().trim().isEmpty()) {
+                return "Book author is required";
+            }
+            
+            Book book = new Book();
+            book.setTitle(bookDTO.getTitle());
+            book.setAuthor(bookDTO.getAuthor());
+            
+            // Handle category
+            if (bookDTO.getCategory() != null && !bookDTO.getCategory().trim().isEmpty()) {
+                book.setCategory(bookDTO.getCategory());
+            } else {
+                book.setCategory("Uncategorized");
+            }
+            
+            // Handle price
+            if (bookDTO.getPrice() != null) {
+                book.setPrice(bookDTO.getPrice());
+            } else {
+                book.setPrice(new BigDecimal("0.00"));
+            }
+            
+            // Handle optional fields with null checks
+            if (bookDTO.getIsbn() != null && !bookDTO.getIsbn().trim().isEmpty()) {
+                book.setIsbn(bookDTO.getIsbn());
+            }
+            
+            if (bookDTO.getDescription() != null && !bookDTO.getDescription().trim().isEmpty()) {
+                book.setDescription(bookDTO.getDescription());
+            }
+            
+            // Set default stock if not provided
+            book.setStock(bookDTO.getStock() > 0 ? bookDTO.getStock() : 1);
+            
+            // Set default coin price if not provided
+            book.setCoinPrice(bookDTO.getCoinPrice() > 0 ? bookDTO.getCoinPrice() : 0);
+            
+            // Set publish date if provided, otherwise use current date
+            book.setPublishDate(bookDTO.getPublishDate() != null ? bookDTO.getPublishDate() : LocalDateTime.now());
 
-        bookRepository.save(book);
-        return "Book added successfully!";
+            bookRepository.save(book);
+            return "Book added successfully!";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     public List<BookDTO> getAllBooks() {

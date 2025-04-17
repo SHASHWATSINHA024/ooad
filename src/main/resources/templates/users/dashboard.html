@@ -23,13 +23,53 @@
                 <h5 class="mb-0">Top Books This Month</h5>
             </div>
             <div class="card-body">
-                <div class="row" th:if="${topBooks != null && !topBooks.empty}">
-                    <div class="col-md-3 mb-3" th:each="book : ${topBooks.subList(0, T(Math).min(4, topBooks.size()))}">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${book.title}">Book Title</h5>
-                                <p class="card-text text-muted" th:text="${book.author}">Author</p>
+                <div class="card-group mb-4">
+                    <div class="card" th:each="book : ${topBooks}">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                            <p class="card-text text-muted" th:text="${book.author}">Author</p>
+                            <div class="d-flex justify-content-between">
                                 <a th:href="@{/books/view/{id}(id=${book.id})}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                <button type="button" class="btn btn-sm btn-outline-success" 
+                                        data-bs-toggle="modal" 
+                                        th:data-bs-target="'#buyBookModal-' + ${book.id}">
+                                    Buy Book
+                                </button>
+                            </div>
+                            
+                            <!-- Buy Book Modal -->
+                            <div class="modal fade" th:id="'buyBookModal-' + ${book.id}" tabindex="-1" aria-labelledby="buyBookModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="buyBookModalLabel">Buy Book: <span th:text="${book.title}">Book Title</span></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form th:action="@{/users/{userId}/books/{bookId}/purchase(userId=${user.id},bookId=${book.id})}" method="post">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="quantity" class="form-label">Quantity (max 3)</label>
+                                                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="3" value="1" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="useCoins" class="form-label">Use Coins for Discount</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" id="useCoins" name="useCoins" min="0" th:max="${user.coins}" value="0">
+                                                        <span class="input-group-text">Coins Available: <span th:text="${user.coins}">0</span></span>
+                                                    </div>
+                                                    <small class="form-text text-muted">Each coin gives $1 discount</small>
+                                                </div>
+                                                <div class="alert alert-info">
+                                                    Price: $<span th:text="${book.price}">10.99</span> per copy
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Purchase</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -61,6 +101,9 @@
                     <a href="#" class="list-group-item list-group-item-action" id="reviews-tab">
                         My Reviews
                     </a>
+                    <a href="#" class="list-group-item list-group-item-action" id="library-review-tab">
+                        Library Review
+                    </a>
                     <a href="#" class="list-group-item list-group-item-action" id="sell-book-tab">
                         Sell Books
                     </a>
@@ -81,7 +124,7 @@
                             <h5 class="card-title" th:text="${recentBookTransaction.bookTitle}">Book Title</h5>
                             <p class="card-text">
                                 <small class="text-muted">
-                                    Borrowed on <span th:text="${#temporals.format(recentBookTransaction.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</span>
+                                    Borrowed on <span th:text="${#temporals.format(recentBookTransaction.transactionDate, 'dd MMM yyyy')}">01 Jan 2023</span>
                                 </small>
                             </p>
                             <a th:href="@{/books/view/{id}(id=${recentBookTransaction.bookId})}" class="btn btn-sm btn-primary">View Book</a>
@@ -113,10 +156,10 @@
                                             <td>
                                                 <a th:href="@{/books/view/{id}(id=${borrow.bookId})}" th:text="${borrow.bookTitle}">Book Title</a>
                                             </td>
-                                            <td th:text="${#temporals.format(borrow.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                            <td th:text="${#temporals.format(borrow.transactionDate, 'dd MMM yyyy')}">01 Jan 2023</td>
                                             <td th:text="${#temporals.format(borrow.dueDate, 'dd MMM yyyy')}">15 Jan 2023</td>
                                             <td>
-                                                <span th:with="daysLeft=${T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDate).now(), borrow.dueDate)}"
+                                                <span th:with="daysLeft=${borrow.dueDate != null ? T(java.time.temporal.ChronoUnit).DAYS.between(T(java.time.LocalDateTime).now(), borrow.dueDate) : 0}"
                                                       th:text="${daysLeft}"
                                                       th:class="${daysLeft <= 3 ? 'text-danger' : (daysLeft <= 7 ? 'text-warning' : 'text-success')}">
                                                     10
@@ -184,11 +227,14 @@
                                     <td>
                                         <a th:href="@{/books/view/{id}(id=${borrow.bookId})}" th:text="${borrow.bookTitle}">Book Title</a>
                                     </td>
-                                    <td th:text="${#temporals.format(borrow.borrowDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                    <td th:text="${#temporals.format(borrow.transactionDate, 'dd MMM yyyy')}">01 Jan 2023</td>
                                     <td th:text="${#temporals.format(borrow.dueDate, 'dd MMM yyyy')}">15 Jan 2023</td>
-                                    <td th:text="${borrow.status}">BORROWED</td>
+                                    <td th:text="${borrow.returnDate == null ? 'BORROWED' : 'RETURNED'}">BORROWED</td>
                                     <td>
-                                        <a th:if="${borrow.status == 'BORROWED'}" th:href="@{/users/{userId}/books/{bookId}/return(userId=${user.id},bookId=${borrow.bookId})}" class="btn btn-sm btn-outline-success">Return</a>
+                                        <form th:if="${borrow.returnDate == null}" th:action="@{/users/{userId}/books/{bookId}/return(userId=${user.id},bookId=${borrow.bookId})}" method="post">
+                                            <input type="hidden" name="transactionId" th:value="${borrow.id}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Return</button>
+                                        </form>
                                     </td>
                                 </tr>
                             </tbody>
@@ -221,8 +267,8 @@
                                         <a th:href="@{/books/view/{id}(id=${transaction.bookId})}" th:text="${transaction.bookTitle}">Book Title</a>
                                     </td>
                                     <td th:text="${transaction.type}">BORROW</td>
-                                    <td th:text="${#temporals.format(transaction.timestamp, 'dd MMM yyyy')}">01 Jan 2023</td>
-                                    <td th:text="${transaction.type == 'PURCHASE' ? '$' + transaction.amount : '-'}">$10.99</td>
+                                    <td th:text="${#temporals.format(transaction.transactionDate, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                    <td th:text="${transaction.type == 'PURCHASE' ? '$' + transaction.coinsUsed : '-'}">$10.99</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -244,10 +290,9 @@
                                     <p class="card-text text-muted" th:text="${book.author}">Author</p>
                                     <div class="d-flex justify-content-between">
                                         <a th:href="@{/books/view/{id}(id=${book.id})}" class="btn btn-sm btn-outline-primary">View</a>
-                                        <form th:action="@{/users/{id}/books/{bookId}/wishlist(id=${user.id},bookId=${book.id})}" method="post">
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                                        </form>
+                                        <form th:action="@{/users/{id}/books/{bookId}/wishlist/remove(id=${user.id},bookId=${book.id})}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
                                     </div>
                                 </div>
                             </div>
@@ -268,7 +313,7 @@
                                 <h5 class="mb-1">
                                     <a th:href="@{/books/view/{id}(id=${review.bookId})}" th:text="${review.bookTitle}">Book Title</a>
                                 </h5>
-                                <small th:text="${#temporals.format(review.timestamp, 'dd MMM yyyy')}">01 Jan 2023</small>
+                                <small th:text="${#temporals.format(review.reviewDate, 'dd MMM yyyy')}">01 Jan 2023</small>
                             </div>
                             <div class="mb-2">
                                 <span th:each="i : ${#numbers.sequence(1, 5)}">
@@ -276,11 +321,77 @@
                                     <i class="far fa-star" th:unless="${i <= review.rating}"></i>
                                 </span>
                             </div>
-                            <p class="mb-1" th:text="${review.comment}">Review comment</p>
+                            <p class="mb-1" th:text="${review.reviewText}">Review comment</p>
                         </div>
                     </div>
                     <div class="alert alert-info" th:unless="${myReviews != null && !myReviews.empty}">
                         You haven't written any reviews yet. <a th:href="@{/books/view}" class="alert-link">Browse our catalog</a> to find books to review.
+                    </div>
+                </div>
+                
+                <!-- Library Review (Hidden) -->
+                <div id="library-review-content" style="display: none;">
+                    <h3>Submit a Library Review</h3>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="@{/users/{id}/library-review(id=${user.id})}" method="post">
+                                <div class="mb-3">
+                                    <label for="libraryRating" class="form-label">Rating</label>
+                                    <div class="rating">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="rating" id="rating1" value="1" required>
+                                            <label class="form-check-label" for="rating1">1 ★</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
+                                            <label class="form-check-label" for="rating2">2 ★</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
+                                            <label class="form-check-label" for="rating3">3 ★</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
+                                            <label class="form-check-label" for="rating4">4 ★</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
+                                            <label class="form-check-label" for="rating5">5 ★</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewTitle" class="form-label">Review Title</label>
+                                    <input type="text" class="form-control" id="reviewTitle" name="title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewText" class="form-label">Review</label>
+                                    <textarea class="form-control" id="reviewText" name="reviewText" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mt-4">My Previous Library Reviews</h4>
+                    <div class="list-group" th:if="${libraryReviews != null && !libraryReviews.empty}">
+                        <div class="list-group-item" th:each="review : ${libraryReviews}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1" th:text="${review.title}">Review Title</h5>
+                                <small th:text="${#temporals.format(review.reviewDate, 'dd MMM yyyy')}">01 Jan 2023</small>
+                            </div>
+                            <div class="mb-2">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:if="${i <= review.rating}"></i>
+                                    <i class="far fa-star" th:unless="${i <= review.rating}"></i>
+                                </span>
+                            </div>
+                            <p class="mb-1" th:text="${review.reviewText}">Review comment</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" th:unless="${libraryReviews != null && !libraryReviews.empty}">
+                        You haven't submitted any library reviews yet.
                     </div>
                 </div>
                 
@@ -343,7 +454,7 @@
                                     <td th:text="${request.bookTitle}">Book Title</td>
                                     <td th:text="${'$' + request.askingPrice}">$10.99</td>
                                     <td th:text="${request.status}">PENDING</td>
-                                    <td th:text="${#temporals.format(request.timestamp, 'dd MMM yyyy')}">01 Jan 2023</td>
+                                    <td th:text="${#temporals.format(request.requestDate, 'dd MMM yyyy')}">01 Jan 2023</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -368,6 +479,7 @@
             const transactionsTab = document.getElementById('transactions-tab');
             const wishlistTab = document.getElementById('wishlist-tab');
             const reviewsTab = document.getElementById('reviews-tab');
+            const libraryReviewTab = document.getElementById('library-review-tab');
             const sellBookTab = document.getElementById('sell-book-tab');
             
             // Get all content elements
@@ -377,17 +489,18 @@
             const transactionsContent = document.getElementById('transactions-content');
             const wishlistContent = document.getElementById('wishlist-content');
             const reviewsContent = document.getElementById('reviews-content');
+            const libraryReviewContent = document.getElementById('library-review-content');
             const sellBookContent = document.getElementById('sell-book-content');
             
             // Function to set active tab and content
             function setActive(activeTab, activeContent) {
                 // Remove active class from all tabs
-                [overviewTab, profileTab, borrowedBooksTab, transactionsTab, wishlistTab, reviewsTab, sellBookTab].forEach(tab => {
+                [overviewTab, profileTab, borrowedBooksTab, transactionsTab, wishlistTab, reviewsTab, libraryReviewTab, sellBookTab].forEach(tab => {
                     tab.classList.remove('active');
                 });
                 
                 // Hide all content
-                [overviewContent, profileContent, borrowedBooksContent, transactionsContent, wishlistContent, reviewsContent, sellBookContent].forEach(content => {
+                [overviewContent, profileContent, borrowedBooksContent, transactionsContent, wishlistContent, reviewsContent, libraryReviewContent, sellBookContent].forEach(content => {
                     content.style.display = 'none';
                 });
                 
@@ -427,10 +540,49 @@
                 setActive(reviewsTab, reviewsContent);
             });
             
+            libraryReviewTab.addEventListener('click', function(e) {
+                e.preventDefault();
+                setActive(libraryReviewTab, libraryReviewContent);
+            });
+            
             sellBookTab.addEventListener('click', function(e) {
                 e.preventDefault();
                 setActive(sellBookTab, sellBookContent);
             });
+            
+            // AJAX form submission for profile update
+            const profileForm = document.querySelector('form[action$="/update-profile"]');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    
+                    // Log form data for debugging
+                    console.log('Form data:');
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            // Reload page to see updates and flash messages
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Still reload the page to show any flash attributes
+                        window.location.reload();
+                    });
+                });
+            }
         });
     </script>
 </body>

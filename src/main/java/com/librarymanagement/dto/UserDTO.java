@@ -31,6 +31,8 @@ public class UserDTO {
     
     private String address;
     
+    private String membershipType;
+    
     // Default constructor
     public UserDTO() {}
     
@@ -125,5 +127,13 @@ public class UserDTO {
     
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    public String getMembershipType() {
+        return membershipType;
+    }
+    
+    public void setMembershipType(String membershipType) {
+        this.membershipType = membershipType;
     }
 }

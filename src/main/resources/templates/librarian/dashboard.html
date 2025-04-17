@@ -4,244 +4,227 @@
 <body>
     <header th:replace="fragments/layout :: header"></header>
     
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div th:replace="fragments/layout :: alert"></div>
         
-        <h1>Librarian Dashboard</h1>
-        <p class="lead">Welcome, <span th:text="${librarian != null ? librarian.name : 'Librarian'}">Librarian</span>!</p>
-        
-        <!-- Overview Statistics Cards -->
-        <div class="row mb-4">
-            <!-- Members Card -->
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-primary h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Total Members</h6>
-                                <h2 class="mb-0" th:text="${memberCount != null ? memberCount : 0}">0</h2>
-                            </div>
-                            <i class="fas fa-users fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <a th:href="@{/api/librarians/members}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Defaulted Members Card -->
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-danger h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Defaulted Members</h6>
-                                <h2 class="mb-0" th:text="${defaultedMemberCount != null ? defaultedMemberCount : 0}">0</h2>
-                            </div>
-                            <i class="fas fa-exclamation-triangle fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <a th:href="@{/librarian/defaulted}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Books in Stock Card -->
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-success h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Books in Stock</h6>
-                                <h2 class="mb-0" th:text="${bookCount != null ? bookCount : 0}">0</h2>
-                            </div>
-                            <i class="fas fa-book fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <a th:href="@{/librarian/books}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Monthly Earnings Card -->
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-info h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Monthly Earnings</h6>
-                                <h2 class="mb-0">$<span th:text="${monthlyEarnings != null ? #numbers.formatDecimal(monthlyEarnings, 1, 2) : '0.00'}">0.00</span></h2>
-                            </div>
-                            <i class="fas fa-dollar-sign fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <a th:href="@{/librarian/earnings}" class="text-white">View Details <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <div class="row">
-            <!-- Left Navigation Column -->
-            <div class="col-md-3">
-                <div class="list-group mb-4">
-                    <div class="list-group-item bg-light text-dark font-weight-bold">
-                        Member Management
-                    </div>
-                    <a th:href="@{/librarian/members}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-users me-2"></i> All Members
-                    </a>
-                    <a th:href="@{/librarian/defaulted}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Defaulted Members
-                    </a>
-                    <a th:href="@{/librarian/membership-requests}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-user-plus me-2"></i> Membership Requests <span class="badge bg-danger rounded-pill" th:if="${pendingMembershipRequestCount > 0}" th:text="${pendingMembershipRequestCount}">0</span>
-                    </a>
-                </div>
-                
-                <div class="list-group mb-4">
-                    <div class="list-group-item bg-light text-dark font-weight-bold">
-                        Book Management
-                    </div>
-                    <a th:href="@{/librarian/books}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-book me-2"></i> Book Inventory
-                    </a>
-                    <a th:href="@{/librarian/book-orders}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-shipping-fast me-2"></i> Order Books
-                    </a>
-                    <a th:href="@{/librarian/book-deliveries}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-truck me-2"></i> Book Deliveries
-                    </a>
-                    <a th:href="@{/librarian/book-requests}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-clipboard-list me-2"></i> Book Requests <span class="badge bg-danger rounded-pill" th:if="${pendingBookRequestCount > 0}" th:text="${pendingBookRequestCount}">0</span>
-                    </a>
-                    <a th:href="@{/librarian/sell-requests}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-exchange-alt me-2"></i> Sell Requests <span class="badge bg-danger rounded-pill" th:if="${pendingSellRequestCount > 0}" th:text="${pendingSellRequestCount}">0</span>
-                    </a>
-                </div>
-                
-                <div class="list-group mb-4">
-                    <div class="list-group-item bg-light text-dark font-weight-bold">
-                        Reports & Feedback
-                    </div>
-                    <a th:href="@{/librarian/reviews}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-star me-2"></i> Book Reviews
-                    </a>
-                    <a th:href="@{/librarian/earnings}" class="list-group-item list-group-item-action">
-                        <i class="fas fa-chart-line me-2"></i> Earnings Report
-                    </a>
+            <div class="col-md-2">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active" id="circulation-tab">Circulation</a>
+                    <a href="#" class="list-group-item list-group-item-action" id="book-management-tab">Book Management</a>
+                    <a href="#" class="list-group-item list-group-item-action" id="membership-tab">Membership</a>
+                    <a href="#" class="list-group-item list-group-item-action" id="overdue-tab">Overdue Books</a>
+                    <a href="#" class="list-group-item list-group-item-action" id="requests-tab">Requests</a>
                 </div>
             </div>
             
-            <!-- Main Content Column -->
-            <div class="col-md-9">
-                <!-- Recent Activity -->
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Recent Activities</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive" th:if="${recentActivities != null && !recentActivities.empty}">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Activity</th>
-                                        <th>User</th>
-                                        <th>Item</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="activity : ${recentActivities}">
-                                        <td th:text="${activity.type}">BORROW</td>
-                                        <td>
-                                            <a th:href="@{/librarian/members/{id}(id=${activity.userId})}" th:text="${activity.userName}">John Doe</a>
-                                        </td>
-                                        <td>
-                                            <a th:if="${activity.bookId != null}" th:href="@{/books/view/{id}(id=${activity.bookId})}" th:text="${activity.itemName}">Book Title</a>
-                                            <span th:unless="${activity.bookId != null}" th:text="${activity.itemName}">Item Name</span>
-                                        </td>
-                                        <td th:text="${#temporals.format(activity.timestamp, 'dd MMM yyyy HH:mm')}">01 Jan 2023 12:00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <div class="col-md-10">
+                <!-- Circulation Tab -->
+                <div id="circulation-content">
+                    <h1>Librarian Dashboard</h1>
+                    <p class="lead">Welcome, <span th:text="${librarian.fullName}">Librarian</span>!</p>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            Book Circulation
                         </div>
-                        <div class="alert alert-info" th:unless="${recentActivities != null && !recentActivities.empty}">
-                            No recent activities to display.
+                        <div class="card-body">
+                            <form class="row g-3" th:action="@{/librarian/circulation/issue}" method="post">
+                                <div class="col-md-5">
+                                    <label for="userId" class="form-label">User</label>
+                                    <select class="form-select" id="userId" name="userId" required>
+                                        <option value="">Select user</option>
+                                        <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.fullName} + ' (' + ${user.username} + ')'"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="bookId" class="form-label">Book</label>
+                                    <select class="form-select" id="bookId" name="bookId" required>
+                                        <option value="">Select book</option>
+                                        <option th:each="book : ${availableBooks}" th:value="${book.id}" th:text="${book.title} + ' by ' + ${book.author}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Issue Book</button>
+                                </div>
+                            </form>
+                            
+                            <hr>
+                            
+                            <form class="row g-3 mt-3" th:action="@{/librarian/circulation/return}" method="post">
+                                <div class="col-md-10">
+                                    <label for="transactionId" class="form-label">Return Book</label>
+                                    <select class="form-select" id="transactionId" name="transactionId" required>
+                                        <option value="">Select transaction</option>
+                                        <option th:each="transaction : ${activeTransactions}" 
+                                                th:value="${transaction.id}" 
+                                                th:text="${transaction.book.title} + ' - Borrowed by ' + ${transaction.user.fullName} + ' on ' + ${#temporals.format(transaction.borrowDate, 'dd MMM yyyy')}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success w-100">Return Book</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            Recent Transactions
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>User</th>
+                                            <th>Book</th>
+                                            <th>Borrow Date</th>
+                                            <th>Due Date</th>
+                                            <th>Return Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="transaction : ${recentTransactions}">
+                                            <td th:text="${transaction.id}">1</td>
+                                            <td th:text="${transaction.user.fullName}">John Smith</td>
+                                            <td th:text="${transaction.book.title}">Book Title</td>
+                                            <td th:text="${#temporals.format(transaction.borrowDate, 'dd MMM yyyy')}">01 Apr 2024</td>
+                                            <td th:text="${#temporals.format(transaction.dueDate, 'dd MMM yyyy')}">15 Apr 2024</td>
+                                            <td th:text="${transaction.returnDate != null ? #temporals.format(transaction.returnDate, 'dd MMM yyyy') : '-'}">-</td>
+                                            <td>
+                                                <span class="badge bg-success" th:if="${transaction.status == 'ACTIVE'}">Active</span>
+                                                <span class="badge bg-danger" th:if="${transaction.status == 'OVERDUE'}">Overdue</span>
+                                                <span class="badge bg-secondary" th:if="${transaction.status == 'RETURNED'}">Returned</span>
+                                            </td>
+                                            <td>
+                                                <form th:if="${transaction.status != 'RETURNED'}" th:action="@{/librarian/circulation/return}" method="post" class="d-inline">
+                                                    <input type="hidden" name="transactionId" th:value="${transaction.id}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">Return</button>
+                                                </form>
+                                                <a th:href="@{/librarian/transactions/{id}(id=${transaction.id})}" class="btn btn-sm btn-outline-info">Details</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Books Running Low on Stock -->
-                <div class="card mb-4">
-                    <div class="card-header bg-warning text-dark">
-                        <h5 class="mb-0">Books Low in Stock</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive" th:if="${lowStockBooks != null && !lowStockBooks.empty}">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Author</th>
-                                        <th>Current Stock</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="book : ${lowStockBooks}">
-                                        <td>
-                                            <a th:href="@{/books/view/{id}(id=${book.id})}" th:text="${book.title}">Book Title</a>
-                                        </td>
-                                        <td th:text="${book.author}">Author Name</td>
-                                        <td>
-                                            <span class="badge bg-danger" th:if="${book.stock == 0}">Out of Stock</span>
-                                            <span class="badge bg-warning" th:if="${book.stock > 0 && book.stock < 5}" th:text="${book.stock}">3</span>
-                                        </td>
-                                        <td>
-                                            <a th:href="@{/librarian/book-orders/new(bookId=${book.id})}" class="btn btn-sm btn-outline-primary">Order More</a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <!-- Book Management Tab (hidden by default) -->
+                <div id="book-management-content" style="display: none;">
+                    <h2>Book Management</h2>
+                    <!-- Book management content -->
+                </div>
+                
+                <!-- Membership Tab (hidden by default) -->
+                <div id="membership-content" style="display: none;">
+                    <h2>Membership Management</h2>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            Pending Membership Requests
                         </div>
-                        <div class="alert alert-success" th:unless="${lowStockBooks != null && !lowStockBooks.empty}">
-                            All books are well stocked.
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Membership Type</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:if="${pendingUsers != null}" th:each="user : ${pendingUsers}">
+                                            <td th:text="${user.id}">1</td>
+                                            <td th:text="${user.fullName}">John Smith</td>
+                                            <td th:text="${user.username}">johnsmith</td>
+                                            <td th:text="${user.email}">john@example.com</td>
+                                            <td th:text="${user.phoneNumber ?: '-'}">555-123-4567</td>
+                                            <td th:text="${user.membershipType}">MONTHLY</td>
+                                            <td>
+                                                <form th:action="@{/librarian/membership/approve}" method="post" class="d-inline">
+                                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                                </form>
+                                                <form th:action="@{/librarian/membership/reject}" method="post" class="d-inline">
+                                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${pendingUsers == null || pendingUsers.empty}">
+                                            <td colspan="7" class="text-center">No pending membership requests</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            Active Members
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Membership Type</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:if="${activeUsers != null}" th:each="user : ${activeUsers}">
+                                            <td th:text="${user.id}">1</td>
+                                            <td th:text="${user.fullName}">John Smith</td>
+                                            <td th:text="${user.username}">johnsmith</td>
+                                            <td th:text="${user.email}">john@example.com</td>
+                                            <td th:text="${user.membershipType}">MONTHLY</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>
+                                                <form th:action="@{/librarian/membership/suspend}" method="post" class="d-inline">
+                                                    <input type="hidden" name="userId" th:value="${user.id}">
+                                                    <button type="submit" class="btn btn-sm btn-warning">Suspend</button>
+                                                </form>
+                                                <a th:href="@{/librarian/users/{id}(id=${user.id})}" class="btn btn-sm btn-info">Details</a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${activeUsers == null || activeUsers.empty}">
+                                            <td colspan="7" class="text-center">No active members</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Pending Requests Summary -->
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Pending Requests</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Membership Requests</h5>
-                                        <p class="card-text" th:text="${pendingMembershipRequestCount} + ' pending requests'">0 pending requests</p>
-                                        <a th:href="@{/librarian/membership-requests}" class="btn btn-primary">Review Requests</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Book Sell Requests</h5>
-                                        <p class="card-text" th:text="${pendingSellRequestCount} + ' pending requests'">0 pending requests</p>
-                                        <a th:href="@{/librarian/sell-requests}" class="btn btn-primary">Review Requests</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Overdue Tab (hidden by default) -->
+                <div id="overdue-content" style="display: none;">
+                    <h2>Overdue Books</h2>
+                    <!-- Overdue books content -->
+                </div>
+                
+                <!-- Requests Tab (hidden by default) -->
+                <div id="requests-content" style="display: none;">
+                    <h2>Requests</h2>
+                    <!-- Requests content -->
                 </div>
             </div>
         </div>
@@ -249,4 +232,4 @@
     
     <footer th:replace="fragments/layout :: footer"></footer>
 </body>
-</html> 
+</html>

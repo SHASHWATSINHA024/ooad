@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${book.id == null ? 'Add New Book' : 'Edit Book'})">
+    <meta charset="UTF-8">
+    <title>Book Form</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="container mt-5">
+        <div th:replace="fragments/layout :: alert"></div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3 th:text="${book.id == null ? 'Add New Book' : 'Edit Book: ' + book.title}">Book Form</h3>
+            </div>
+            <div class="card-body">
+                <form th:action="${book.id == null ? '/admin/books/add' : '/admin/books/' + book.id + '/edit'}" 
+                      method="post" th:object="${book}">
+                    
+                    <input type="hidden" th:field="*{id}" />
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Author</label>
+                        <input type="text" class="form-control" id="author" th:field="*{author}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="isbn" class="form-label">ISBN</label>
+                        <input type="text" class="form-control" id="isbn" th:field="*{isbn}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-control" id="category" th:field="*{category}">
+                            <option value="">-- Select Category --</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Science">Science</option>
+                            <option value="Technology">Technology</option>
+                            <option value="History">History</option>
+                            <option value="Biography">Biography</option>
+                            <option value="Self-Help">Self-Help</option>
+                            <option value="Business">Business</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" th:field="*{stock}" min="0" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="coinPrice" class="form-label">Coin Price</label>
+                        <input type="number" class="form-control" id="coinPrice" th:field="*{coinPrice}" min="0">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="/admin/dashboard" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Book</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

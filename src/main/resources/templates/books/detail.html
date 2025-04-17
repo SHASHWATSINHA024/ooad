@@ -15,26 +15,64 @@
                 <div class="mt-3">
                     <!-- Borrow and Wishlist buttons -->
                     <div class="d-grid gap-2">
-                        <form th:if="${book.stock > 0}" th:action="@{/books/borrow}" method="post">
-                            <input type="hidden" name="bookId" th:value="${book.id}">
+                        <form th:if="${book != null && book.stock > 0}" th:action="@{/books/borrow}" method="post">
+                            <input type="hidden" name="bookId" th:value="${book != null ? book.id : ''}">
                             <button type="submit" class="btn btn-success d-block w-100">Borrow</button>
                         </form>
-                        <button th:unless="${book.stock > 0}" class="btn btn-secondary d-block w-100" disabled>
+                        <button th:if="${book != null && book.stock <= 0}" class="btn btn-secondary d-block w-100" disabled>
                             Currently Unavailable
                         </button>
                         
-                        <form th:action="@{/books/view/addToWishlist}" method="post" class="mt-2">
+                        <form th:if="${book != null}" th:action="@{/books/addToWishlist}" method="post" class="mt-2">
                             <input type="hidden" name="bookId" th:value="${book.id}">
                             <button type="submit" class="btn btn-outline-primary d-block w-100">Add to Wishlist</button>
                         </form>
                         
-                        <!-- Add Request Book button -->
-                        <a th:href="@{/books/request}" class="btn btn-outline-secondary d-block w-100 mt-2">
-                            Request Similar Book
-                        </a>
+                        <!-- Buy Book button -->
+                        <button th:if="${book != null && book.stock > 0 && book.price != null}" type="button" 
+                                class="btn btn-outline-success d-block w-100 mt-2"
+                                data-bs-toggle="modal" 
+                                th:data-bs-target="'#buyBookModal-' + ${book.id}">
+                            Buy Book
+                        </button>
+                        
+                        <!-- Buy Book Modal -->
+                        <div class="modal fade" th:id="'buyBookModal-' + ${book.id}" tabindex="-1" aria-labelledby="buyBookModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="buyBookModalLabel">Buy Book: <span th:text="${book.title}">Book Title</span></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form th:action="@{/users/{userId}/books/{bookId}/purchase(userId=${session.currentUser != null ? session.currentUser.id : ''},bookId=${book.id})}" method="post">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="quantity" class="form-label">Quantity (max 3)</label>
+                                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="3" value="1" required>
+                                            </div>
+                                            <div class="mb-3" th:if="${session.currentUser != null}">
+                                                <label for="useCoins" class="form-label">Use Coins for Discount</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="useCoins" name="useCoins" min="0" th:max="${session.currentUser.coins}" value="0">
+                                                    <span class="input-group-text">Coins Available: <span th:text="${session.currentUser != null ? session.currentUser.coins : 0}">0</span></span>
+                                                </div>
+                                                <small class="form-text text-muted">Each coin gives $1 discount</small>
+                                            </div>
+                                            <div class="alert alert-info">
+                                                Price: $<span th:text="${book.price}">10.99</span> per copy
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Purchase</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="mt-3">
+                    <div class="mt-3" th:if="${book != null}">
                         <h5>Book Details</h5>
                         <ul class="list-group">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -67,22 +105,62 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
                         <li class="breadcrumb-item"><a th:href="@{/books/view}">Books</a></li>
-                        <li class="breadcrumb-item active" aria-current="page" th:text="${book.title}">Book Title</li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${book != null ? book.title : 'Book Details'}">Book Title</li>
                     </ol>
                 </nav>
                 
-                <h1 th:text="${book.title}">Book Title</h1>
-                <h4 class="text-muted" th:text="'by ' + ${book.author}">by Author</h4>
+                <div th:if="${book != null}">
+                    <h1 th:text="${book.title}">Book Title</h1>
+                    <h4 class="text-muted" th:text="${'by ' + book.author}">by Author</h4>
+                    
+                    <div class="mt-4">
+                        <h3>Description</h3>
+                        <p th:text="${book.description != null ? book.description : 'No description available.'}">Book description goes here...</p>
+                    </div>
+                </div>
                 
-                <div class="mt-4">
-                    <h3>Description</h3>
-                    <p th:text="${book.description != null ? book.description : 'No description available.'}">Book description goes here...</p>
+                <!-- Error message if book is null -->
+                <div th:if="${book == null}" class="alert alert-danger">
+                    Book not found. The book you're looking for may have been removed or doesn't exist.
                 </div>
                 
                 <!-- Simplified review section -->
-                <div class="mt-4">
+                <div class="mt-4" th:if="${book != null}">
                     <h3>Reviews</h3>
-                    <div class="alert alert-light">
+                    
+                    <!-- Display Reviews -->
+                    <div th:if="${reviews != null && !reviews.empty}">
+                        <div class="mb-3">
+                            <span>Average Rating: </span>
+                            <span th:if="${averageRating != null}" th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">4.5</span>
+                            <span th:unless="${averageRating != null}">No ratings yet</span>
+                            <span th:if="${averageRating != null}" class="ms-2">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:if="${i <= averageRating}"></i>
+                                    <i class="fas fa-star-half-alt" th:if="${i > averageRating && i <= averageRating + 0.5}"></i>
+                                    <i class="far fa-star" th:if="${i > averageRating + 0.5}"></i>
+                                </span>
+                            </span>
+                        </div>
+                        
+                        <div class="list-group mb-4">
+                            <div class="list-group-item" th:each="review : ${reviews}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1" th:text="${review.userName}">Username</h5>
+                                    <small th:text="${#temporals.format(review.reviewDate, 'dd MMM yyyy')}">01 Jan 2023</small>
+                                </div>
+                                <div class="mb-2">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                        <i class="fas fa-star" th:if="${i <= review.rating}"></i>
+                                        <i class="far fa-star" th:unless="${i <= review.rating}"></i>
+                                    </span>
+                                </div>
+                                <p class="mb-1" th:text="${review.reviewText}">Review comment</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-light" th:unless="${reviews != null && !reviews.empty}">
                         No reviews yet. Be the first to review this book!
                     </div>
                     

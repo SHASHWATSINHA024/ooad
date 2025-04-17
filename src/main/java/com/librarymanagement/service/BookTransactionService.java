@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookTransactionService {
@@ -49,6 +50,17 @@ public class BookTransactionService {
         
         Book book = bookOpt.get();
         User user = userOpt.get();
+        
+        // Check if book is available for borrowing
+        if (TransactionType.valueOf(transactionDTO.getType()) == TransactionType.BORROW) {
+            if (book.getStock() <= 0) {
+                // Book is out of stock
+                return null;
+            }
+            
+            // Reduce book stock
+            book.setStock(book.getStock() - 1);
+        }
         
         BookTransaction transaction = new BookTransaction();
         transaction.setBook(book);
@@ -288,6 +300,11 @@ public class BookTransactionService {
         // Mark as returned
         transaction.setReturnDate(LocalDateTime.now());
         
+        // Increase book stock when returning
+        Book book = transaction.getBook();
+        book.setStock(book.getStock() + 1);
+        bookRepository.save(book);
+        
         // Save the transaction
         BookTransaction savedTransaction = bookTransactionRepository.save(transaction);
         
@@ -351,5 +368,115 @@ public class BookTransactionService {
      */
     public Integer calculateEarnings(LocalDateTime startDate, LocalDateTime endDate) {
         return bookTransactionRepository.findTotalEarnings(startDate, endDate);
+    }
+    
+    /**
+     * Get all transactions
+     */
+    public List<BookTransactionDTO> getAllTransactions() {
+        List<BookTransaction> transactions = bookTransactionRepository.findAll();
+        List<BookTransactionDTO> transactionDTOs = new ArrayList<>();
+        
+        for (BookTransaction transaction : transactions) {
+            BookTransactionDTO dto = convertToDTO(transaction);
+            transactionDTOs.add(dto);
+        }
+        
+        return transactionDTOs;
+    }
+    
+    /**
+     * Get all current borrows (for all users)
+     */
+    public List<BookTransactionDTO> getCurrentBorrows() {
+        List<BookTransaction> transactions = bookTransactionRepository.findAll();
+        return transactions.stream()
+            .filter(t -> t.getType() == TransactionType.BORROW && t.getReturnDate() == null)
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get recent transactions with a limit
+     */
+    public List<BookTransactionDTO> getRecentTransactions(int limit) {
+        List<BookTransaction> transactions = bookTransactionRepository.findAll();
+        
+        // Sort by transaction date (most recent first)
+        transactions.sort((t1, t2) -> t2.getTransactionDate().compareTo(t1.getTransactionDate()));
+        
+        // Apply limit
+        List<BookTransaction> limitedTransactions = transactions.stream()
+            .limit(limit)
+            .collect(Collectors.toList());
+        
+        // Convert to DTOs
+        List<BookTransactionDTO> dtos = new ArrayList<>();
+        for (BookTransaction transaction : limitedTransactions) {
+            dtos.add(convertToDTO(transaction));
+        }
+        
+        return dtos;
+    }
+    
+    /**
+     * Purchase a book for a user
+     */
+    public BookTransactionDTO purchaseBook(Long userId, Long bookId) {
+        Optional<Book> bookOpt = bookRepository.findById(bookId);
+        Optional<User> userOpt = userRepository.findById(userId);
+        
+        if (bookOpt.isEmpty()) {
+            throw new IllegalArgumentException("Book not found");
+        }
+        
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+        
+        Book book = bookOpt.get();
+        User user = userOpt.get();
+        
+        // Check if book is available for purchase
+        if (book.getStock() <= 0) {
+            throw new IllegalArgumentException("Book is out of stock");
+        }
+        
+        // Create transaction
+        BookTransactionDTO transactionDTO = new BookTransactionDTO();
+        transactionDTO.setBookId(bookId);
+        transactionDTO.setUserId(userId);
+        transactionDTO.setType("PURCHASE");
+        
+        // Process purchase
+        return createTransaction(transactionDTO);
+    }
+    
+    /**
+     * Helper method to convert entity to DTO
+     */
+    private BookTransactionDTO convertToDTO(BookTransaction transaction) {
+        BookTransactionDTO dto = new BookTransactionDTO();
+        dto.setId(transaction.getId());
+        dto.setBookId(transaction.getBook().getId());
+        dto.setBookTitle(transaction.getBook().getTitle());
+        dto.setUserId(transaction.getUser().getId());
+        dto.setUserName(transaction.getUser().getUsername());
+        dto.setType(transaction.getType().toString());
+        dto.setTransactionDate(transaction.getTransactionDate());
+        dto.setDueDate(transaction.getDueDate());
+        dto.setReturnDate(transaction.getReturnDate());
+        dto.setCoinsUsed(transaction.getCoinsUsed());
+        dto.setPaid(transaction.isPaid());
+        dto.setNotes(transaction.getNotes());
+        
+        // Calculate days left if it's a borrow transaction
+        if (transaction.getType() == TransactionType.BORROW && transaction.getDueDate() != null) {
+            long daysLeft = ChronoUnit.DAYS.between(LocalDateTime.now(), transaction.getDueDate());
+            dto.setDaysLeft(daysLeft);
+            dto.setOverdue(daysLeft < 0);
+        }
+        
+        return dto;
     }
 } 

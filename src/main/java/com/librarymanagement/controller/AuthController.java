@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.librarymanagement.dto.LoginDTO;
@@ -49,6 +51,57 @@ public class AuthController {
             // Authentication failed
             redirectAttributes.addFlashAttribute("error", "Invalid username or password");
             return "redirect:/auth/login";
+        }
+    }
+
+    @GetMapping("/register")
+    public String registerPage(Model model, @RequestParam(required = false) String membershipType) {
+        UserDTO userDTO = new UserDTO();
+        
+        // Pre-select membership type if provided in URL
+        if (membershipType != null && !membershipType.isEmpty()) {
+            userDTO.setMembershipType(membershipType);
+        }
+        
+        model.addAttribute("userDTO", userDTO);
+        return "auth/register";
+    }
+    
+    @PostMapping("/register")
+    public String processRegistration(@ModelAttribute UserDTO userDTO, 
+                                      @RequestParam("confirmPassword") String confirmPassword,
+                                      RedirectAttributes redirectAttributes) {
+        
+        // Validate password match
+        if (!userDTO.getPassword().equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("error", "Passwords do not match");
+            return "redirect:/auth/register";
+        }
+        
+        // Set initial status as PENDING for librarian approval
+        userDTO.setStatus("PENDING");
+        
+        // Set default role as USER
+        userDTO.setRole("USER");
+        
+        // Set initial coins
+        userDTO.setCoins(0);
+        
+        try {
+            // Create user
+            UserDTO createdUser = userService.registerUser(userDTO);
+            
+            if (createdUser != null) {
+                redirectAttributes.addFlashAttribute("message", 
+                    "Registration successful! Your membership request has been sent to the librarian for approval.");
+                return "redirect:/auth/login";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Failed to register. Username or email may already be in use.");
+                return "redirect:/auth/register";
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Registration failed: " + e.getMessage());
+            return "redirect:/auth/register";
         }
     }
 
